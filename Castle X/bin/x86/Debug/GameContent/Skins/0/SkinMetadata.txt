@@ -1,0 +1,7 @@
+@tit.CastleX (Default)
+@backgrounds.1
+@overlays.1
+@sprites.1
+@tiles.1
+@smounds.1
+@music.1

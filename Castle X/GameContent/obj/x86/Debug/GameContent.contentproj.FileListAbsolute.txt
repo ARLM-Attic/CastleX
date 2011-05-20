@@ -1,0 +1,2 @@
+D:\BC\Meus Documentos\Jogos\Castle X\Castle X\GameContent\obj\x86\Debug\ResolveAssemblyReference.cache
+C:\Documents and Settings\Atlan\Meus documentos\Jogos - Desenv\Castle Tudo\Castle X\Castle X\GameContent\obj\x86\Debug\ResolveAssemblyReference.cache

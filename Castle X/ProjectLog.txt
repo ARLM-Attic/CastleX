@@ -1,0 +1,110 @@
+﻿Version Log
+
+---------------------------------------------------------------------
+Next Version features
+---------------------------------------------------------------------
+* 4 new levels
+* new feature: oxygen bottle allow player to move underwater for a while
+* new objects: various windows, spider web
+* new magic object: teleporter (teleports player within the screen)
+* new magic object: Mirror (creates a player clone)
+* new magic object: twisted potion (turn screen upside down)
+* code reviewed for new enemy: jumping enemy (based on old "Boss" code)
+ 
+
+---------------------------------------------------------------------
+V 1.0 - finished in 19.May.2011, by Alexandre Lobão - http://www.AlexandreLobao.com
+---------------------------------------------------------------------
+Features:
+* Project log (this file) to track changes created 
+* changed tile size (32 width x 16 height)
+* new fixed resolution (high, no more low-res): 640px x 400px  (20 x 20 tiles + 80px high HUD)
+* created HUD showing lifes, health, game name and other game information 
+* changed ALL graphics to match the new game (similar to Castle or Maze of Galious), including backgrounds and game icon 
+* removed timed levels control
+* removed ZUNE game code
+* new MovingTile class, for moving platforms
+* arrows now stick to wood blocks; player can jump over them (like platforms)
+* new AnimatedItem class for animated items
+* new animated items: Candle and Torch with burning flames
+* new MultipleState class for items with multiple states
+* new multiple state items: Doors (opened / closed) and lever (turned on / off)
+* new feature: fire events when Items, AnimatedItems and MultipleStateItems are touched by player or arrows, to allow specific behaviours  
+* new feature: lever can be triggered by player moving over it or by an arrow
+* new feature: if there is a lever in level, all moving platform remain stopped until the lever is on
+* new items: yellow, red, blue and green keys
+* new HUD showing collected keys for each color
+* doors will only open if the player has a key with its color, openning a door decrements the corresponding keys counter
+* new MAP object, new HUD with closed MAP, HUD shows open map when map is picked
+* multiple entrances / exist per level, created new Entrance tile and changed Exit tile, 
+*          included code in level file so each exit leads to a specific enter in the next level
+* changed code so exists can lead to back, forth, or any other level 
+* new object: spring, which fire when player steps in and throw player up
+* new items behaviour, new file level format: now items which are not tiles do not create an item on Tiles object,
+*          this allows us to create objects over tiles 
+* new objects: Water surface (AnimatedItem) and water
+* new objects: three different types of terrain, each with surface, middle and botton variatons (see level 0 for example)
+* new level file format: now each level can load a different background
+* new object: background bricks
+* new player sprite / action: climbing (used on ladders)
+* new "debug mode" enabled on game options screen show bounding boxes and FPS
+* removed game setting for show level intros (although the code remains, so a programmer can still present it if needed)
+* removed game properties file use, it's not needed anymore 
+* new feature: player moves, falls and jumps slower when under water
+* removed player need to press "space" before each level, so the game can run smoothly between levels
+* new tile type: transparent, show texture from tile below (fixed bug - stalactites (terrain bottom parts) now show water between stalactites when under water)
+* changed all code that deals with enemies to work with arrays, allowing more flexibility and less repeated coding.
+*           now, one only need to create content with new enemy sprites and increment enemy quantity constants (numMonsters, numGhosts and numFlying) at ScreenManager class to create new enemies  
+* removed "level editor" menu - we plan to get back to editor on version 3
+* new enemy type: Flying enemies (special behaviour: flying); new enemy created: bat
+* new enemy type: Ghost enemies (special behaviour: not afffected by arrows); new enemy created: Ghost 1
+* new climbing object: Ropes.  Adjusted player code to fix bug when playing climbing animation 
+* new levels created: level 2 (Ghost & platforms test) and 3 (ropes and bats test)
+* new "Demo Over" level created to wrap-up the demo
+* fixed bug that was preventing to create exits on ladders or ropes
+* new behaviour: player is tinted with blue and die after a while when underwater
+* new sounds: sound options menu sound, sword and arrow (diffent sounds for normal and underwater), spring
+*			   game background music, Player Killed, Player Jump, ghost killed, flying enemy killed, arrow hitting wood 
+
+
+---------------------------------------------------------------------
+Code base - XNA Platformer Starter Kit Expanded by LordKtulu - http://forums.create.msdn.com/forums/t/34901.aspx
+---------------------------------------------------------------------
+Features:
+* Game State Management (Menu)
+* Global Score
+* Scrolling levels (vertical and horizontal)
+* Custom level information from within the text file (Title, Time Limit, Description)
+* Level Select
+* Falling Apples
+* Options
+* Built in BSOD (incase any error happens you can see what it is)
+* In Game Level Editor (Beta, saving part under progress)
+* Ladders
+* option for 320x240 or 640x480 (in the ScreenManager.cs, "Game Configuration Fields" region near top, set the "useHighResolution" to true or false)
+* A Racing opponent (Turns directions by bumping into walls, Jumps on assigned "J" tiles)
+* Vanishing Tiles
+* Hidden Tiles (Both Solid and platform)
+* Death Tiles
+* Skin selections
+* Powerups
+* new ability to player to shoot bullets // bullets kill enemies
+* new ability to player to use sword  // sword kill ememies
+* Level Information Tags
+    if you would like to set a custom time limit and/or describe and name your level, add these tags to the bottom of the text file
+    set timer to 5 minutes
+	@tim.5
+
+	set title to "my created level"
+	@tit.my created level
+
+	set description to "get to the exit"
+	@des.get to the exit
+
+*Tutorials, Resources, ect. used in the making:
+	Microsoft - Adding a Scrolling Level - http://msdn.microsoft.com/en-us/library/dd254919.aspx
+	Microsoft - Adding a Power Up - http://msdn.microsoft.com/en-us/library/dd254920.aspx
+	Wotudo.net - Adding Game State Management - http://wotudo.net/blogs/wotudo/archive/2009/04/29/platform-starter-kit-adding-game-state-management.aspx
+	XNA's member Brandon Bloom - Adding Vertical Scrolling - http://forums.xna.com/forums/p/24701/144098.aspx#144098
+	XNA's member HadesSpaniel - Adding Ladders - http://forums.xna.com/forums/p/35359/206869.aspx#206869
+	Eirik Hoem’s Blog - Falling Apples - http://blog.eirikhoem.net/index.php/2009/03/01/xna-platformer-starter-kit-falling-apples/
