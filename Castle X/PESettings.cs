@@ -22,11 +22,11 @@ namespace CastleX
             set { showlevelintro = value; }
         }
 
-        bool showfps = true;
+        bool debugMode = false;
         public bool DebugMode
         {
-            get { return showfps; }
-            set { showfps = value; }
+            get { return debugMode; }
+            set { debugMode = value; }
         }
 
         bool customlevelnote = false;

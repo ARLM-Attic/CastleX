@@ -118,7 +118,7 @@ namespace CastleX
                 splashtimer += 1;
                 if (splashtimer > 10)
                 {
-                        screenManager.AddScreen(backgroundScreen);
+                    screenManager.AddScreen(backgroundScreen);
                     screenManager.AddScreen(new MainMenuScreen(screenManager));
                     MediaPlayer.Volume = screenManager.Settings.MusicVolumeAmount;
                     if (screenManager.Settings.InGameMusic && !ingamemusicloaded)

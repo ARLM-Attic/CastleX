@@ -124,6 +124,7 @@ namespace CastleX
         public Texture2D BlankTexture { get; set; }
         public Texture2D SpacerTexture { get; set; }
         public Texture2D HUDTexture { get; set; }
+        public Texture2D BannerTexture { get; set; }
         public Texture2D[] BlockATexture { get; set; }
         public Texture2D[] BlockBTexture { get; set; }
         public Texture2D MoveablePlatformTexture { get; set; }         // Moveable tiles
@@ -265,6 +266,7 @@ namespace CastleX
             HudSmall = GraphicContent.Load<SpriteFont>(@"Fonts\HudSmall");
             BlankTexture = Content.Load<Texture2D>(@"blank");
             HUDTexture = Content.Load<Texture2D>(@"HUD");
+            BannerTexture = Content.Load<Texture2D>(@"Banner");
             SpacerTexture = Content.Load<Texture2D>(@"spacer");
            // GradientTexture = Content.Load<Texture2D>(@"gradient");
 
@@ -1246,6 +1248,7 @@ namespace CastleX
             HudSmall = GraphicContent.Load<SpriteFont>(@"Fonts\HudSmall");
             BlankTexture = Content.Load<Texture2D>(@"blank");
             HUDTexture = Content.Load<Texture2D>(@"HUD");
+            BannerTexture = Content.Load<Texture2D>(@"Banner");
             loadGameContent();
         }
 

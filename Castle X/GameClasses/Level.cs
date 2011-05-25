@@ -797,12 +797,12 @@ namespace CastleX
         /// <summary>
         /// Instantiates a jumping tile and puts it in the level.
         /// </summary>
-        private Tile LoadBossJumpTile(int x, int y)
+        private Tile? LoadBossJumpTile(int x, int y)
         {
             Point position = GetBounds(x, y).Center;
             BossJumpTiles.Add(new BossJumpTile(this, new Vector2(position.X, position.Y)));
 
-            return new Tile(null, TileCollision.Passable, TileType.Other , screenManager);
+            return null;
         }
 
         /// <summary>
@@ -1689,7 +1689,7 @@ namespace CastleX
 
             ScrollCamera(spriteBatch.GraphicsDevice.Viewport);
           //   Matrix cameraTransform = Matrix.CreateTranslation(-cameraPosition, -cameraPositionYAxis + ScreenManager.HUDHeight, 0.0f); //*** HUDHeight in pixels
-            Matrix cameraTransform = Matrix.CreateTranslation(-cameraPosition, -cameraPositionYAxis, 0.0f); //*** HUDHeight in pixels
+            Matrix cameraTransform = Matrix.CreateTranslation(-cameraPosition, -cameraPositionYAxis, 0.0f); 
             spriteBatch.Begin(SpriteBlendMode.AlphaBlend, SpriteSortMode.Immediate, SaveStateMode.None, cameraTransform);
 
             DrawTiles(spriteBatch);
@@ -1769,7 +1769,7 @@ namespace CastleX
             cameraPosition = MathHelper.Clamp(cameraPosition + cameraMovement, 0.0f, maxCameraPosition);
 
 
-            float maxCameraPositionYOffset = Tile.Height * (Height-6) - (viewport.Height - ScreenManager.HUDHeight);// -ScreenManager.HUDHeight; //*** HUD
+            float maxCameraPositionYOffset = Tile.Height * (Height-6) - (viewport.Height - ScreenManager.HUDHeight); //*** HUD
             cameraPositionYAxis = MathHelper.Clamp(cameraPositionYAxis + cameraMovementY, -ScreenManager.HUDHeight, maxCameraPositionYOffset); 
         }
     

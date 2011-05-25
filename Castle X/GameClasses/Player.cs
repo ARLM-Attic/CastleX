@@ -383,7 +383,7 @@ namespace CastleX
             hitSound = Level.screenManager.PlayerHitSound;
 
             // Calculate bounds within texture size.            
-            int width = (int)(idleAnimation.FrameWidth * 0.7);
+            int width = (int)(idleAnimation.FrameWidth * 0.79);
             //int width = (int)(idleAnimation.FrameWidth * 0.4);
             int left = (idleAnimation.FrameWidth - width) / 2;
             int height = (int)(idleAnimation.FrameWidth * 0.8);
@@ -433,6 +433,13 @@ namespace CastleX
         public void Hurt(bool playerKilledSound, int Damage)
         {
             Kill(playerKilledSound, false, Damage);
+            if (screenManager.IsDemo)
+            {
+                this.isAttacking = true;
+                AttackTime = MaxAttackTime;
+                sprite.PlayAnimation(attackAnimation);
+                sprite_sword.PlayAnimation(attack_swordAnimation);
+            }
         }
         /// <summary>
         /// Called when the player gets damage inflicted upon himself.
@@ -943,9 +950,10 @@ namespace CastleX
             int leftTile = (int)Math.Floor((float)bounds.Left / Tile.Width);
             int rightTile = (int)Math.Ceiling(((float)bounds.Right / Tile.Width)) - 1;
             int topTile = (int)Math.Floor((float)bounds.Top / Tile.Height);
-            int bottomTile = (int)Math.Ceiling(((float)bounds.Bottom / Tile.Height)) - 1;
+            int bottomTile = (int)Math.Ceiling(((float)BoundingRectangle.Bottom / Tile.Height)) - 1;
+
             //if(screenManager.IsDemo)
-            //    bottomTile = (int)Math.Ceiling(((float)(bounds.Bottom) / Tile.Height) -0.15) - 1;
+            //    bottomTile = (int)Math.Ceiling(((float)(bounds.Bottom) / Tile.Height) -0.125) - 1; // XXX DEBUG Bacalhau - apagar
 
             // Reset flag to search for ground collision.
             isOnGround = false;
@@ -1023,11 +1031,15 @@ namespace CastleX
                                     {
                                         //In the demo that plays in the background of the menu,
                                         // we want the person to go left if he hits a wall on the right.
+                                    //    if (Math.Abs(tileBounds.Right - previousRight) >= Tile.Width /4 )
+                                     //   if (tileBounds.Right == previousRight)
                                         if (tileBounds.Right == previousRight)
                                             demogoleft = true;
 
                                         //In the demo that plays in the background of the menu,
                                         // we want the person to go right if he hits a wall on the left.
+                                       // if (Math.Abs(tileBounds.Left - previousLeft) >= Tile.Width / 4 )
+                          //              if (tileBounds.Left == previousLeft) 
                                         if (tileBounds.Left == previousLeft)
                                             demogoleft = false;
                                         isOnGround = true;
@@ -1194,7 +1206,18 @@ namespace CastleX
             sprite.Draw(gameTime, spriteBatch, Position, flip, color);
             // Draw the sword if attacking
             if (screenManager.Settings.DebugMode) //  Show bounding box if debugging
-                spriteBatch.Draw(screenManager.BlankTexture, BoundingRectangle, new Color(0, 0, 255, 155)); 
+            {
+                spriteBatch.Draw(screenManager.BlankTexture, BoundingRectangle, new Color(0, 0, 255, 155));
+                // Draw the tiles considered in collision test
+                int leftTile = (int)Math.Floor((float)BoundingRectangle.Left / Tile.Width);
+                int rightTile = (int)Math.Ceiling(((float)BoundingRectangle.Right / Tile.Width)) - 1;
+                int topTile = (int)Math.Floor((float)BoundingRectangle.Top / Tile.Height);
+                int bottomTile = (int)Math.Ceiling(((float)BoundingRectangle.Bottom / Tile.Height)) - 1;
+                spriteBatch.Draw(screenManager.BlankTexture, Level.GetBounds(leftTile, topTile), new Color(125, 0, 0, 125));
+                spriteBatch.Draw(screenManager.BlankTexture, Level.GetBounds(leftTile, bottomTile), new Color(125, 0, 0, 125));
+                spriteBatch.Draw(screenManager.BlankTexture, Level.GetBounds(rightTile, topTile), new Color(125, 0, 0, 125));
+                spriteBatch.Draw(screenManager.BlankTexture, Level.GetBounds(rightTile, bottomTile), new Color(125, 0, 0, 125));
+            }
 
 
         }

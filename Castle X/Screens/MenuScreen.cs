@@ -269,26 +269,26 @@ namespace CastleX
             }
 
             // Draw the menu title.
-
             Vector2 titlePosition = new Vector2(10, 80);
             Vector2 subTitlePosition = new Vector2(10, 10);
             //Vector2 titleOrigin = font.MeasureString(menuTitle) / 2;
             Vector2 titleOrigin = Vector2.Zero;
 
-            Color titleColor = new Color(100, 100, 100, TransitionAlpha);
+            Color titleColor = new Color(200, 200, 200, TransitionAlpha);
             Color subTitleColor = new Color(192, 000, 000, TransitionAlpha);
             titlePosition.Y -= transitionOffset * 100;
 
+            // Draw the game title 
+            spriteBatch.Draw(ScreenManager.BannerTexture, Vector2.Zero, Color.White);
             if (ismainmenu)
             {
-                ScreenManager.DrawShadowedString(spriteBatch, mainMenuFont, "Castle X", new Vector2(50, 10), subTitleColor);
-                ScreenManager.DrawShadowedString(spriteBatch, font, menuTitle, new Vector2((ScreenManager.GraphicsDevice.Viewport.Width / 10 * 1), ScreenManager.GraphicsDevice.Viewport.Height / 6 * 2), titleColor);
+                //ScreenManager.DrawShadowedString(spriteBatch, mainMenuFont, "Castle X", new Vector2(50, 10), subTitleColor);
+                ScreenManager.DrawShadowedString(spriteBatch, font, menuTitle, new Vector2((ScreenManager.GraphicsDevice.Viewport.Width / 20), ScreenManager.GraphicsDevice.Viewport.Height / 4 * 2.5f), titleColor);
             }
             else
             {
-                ScreenManager.DrawShadowedString(spriteBatch, font, menuTitle, new Vector2((ScreenManager.GraphicsDevice.Viewport.Width / 10 * 1), ScreenManager.GraphicsDevice.Viewport.Height / 6 * 1), titleColor);
+                ScreenManager.DrawShadowedString(spriteBatch, font, menuTitle, new Vector2((ScreenManager.GraphicsDevice.Viewport.Width / 20), ScreenManager.GraphicsDevice.Viewport.Height / 4 * 1.5f), titleColor);
             }
-            //SpriteBatch.End();
         }
         #endregion
     }

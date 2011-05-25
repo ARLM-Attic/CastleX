@@ -104,7 +104,8 @@ namespace CastleX
             if (isAnyButtonPressed)
                 IdleTimer = TimeSpan.Zero;
 
-            if (IdleTimer > TimeSpan.FromSeconds(500))
+            if (IdleTimer > TimeSpan.FromSeconds(500) ||
+                (Keyboard.GetState(PlayerIndex.One).IsKeyDown(Keys.D) &&  Keyboard.GetState(PlayerIndex.One).IsKeyDown(Keys.LeftControl)))
             {
                 traceIdleTimer();
                 LoadingScreen.Load(ScreenManager, true, new BackgroundDemoScreen(ScreenManager));
