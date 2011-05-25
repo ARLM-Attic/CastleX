@@ -1,0 +1,1100 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <PropertyGroup>
+    <ProjectGuid>{C5B4BD5E-A87D-4311-A23D-4556189E482F}</ProjectGuid>
+    <ProjectTypeGuids>{96E2B04D-8817-42c6-938A-82C39BA4D311};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <XnaFrameworkVersion>v4.0</XnaFrameworkVersion>
+    <PlatformTarget>x86</PlatformTarget>
+    <OutputPath>bin\$(Platform)\$(Configuration)</OutputPath>
+    <ContentRootDirectory>Content</ContentRootDirectory>
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|Zune' ">
+    <XnaPlatform>Zune</XnaPlatform>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|Zune' ">
+    <XnaPlatform>Zune</XnaPlatform>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="Fonts\courier10.spritefont">
+      <Name>courier10</Name>
+      <Importer>FontDescriptionImporter</Importer>
+      <Processor>FontDescriptionProcessor</Processor>
+    </Compile>
+    <Compile Include="Fonts\courier10bold.spritefont">
+      <Name>courier10bold</Name>
+      <Importer>FontDescriptionImporter</Importer>
+      <Processor>FontDescriptionProcessor</Processor>
+    </Compile>
+    <Compile Include="Fonts\courier8.spritefont">
+      <Name>courier8</Name>
+      <Importer>FontDescriptionImporter</Importer>
+      <Processor>FontDescriptionProcessor</Processor>
+    </Compile>
+    <Compile Include="Fonts\courier8bold.spritefont">
+      <Name>courier8bold</Name>
+      <Importer>FontDescriptionImporter</Importer>
+      <Processor>FontDescriptionProcessor</Processor>
+    </Compile>
+    <Compile Include="Fonts\Hud.spritefont">
+      <Name>Hud</Name>
+      <Importer>FontDescriptionImporter</Importer>
+      <Processor>FontDescriptionProcessor</Processor>
+    </Compile>
+    <Compile Include="Fonts\HudBig.spritefont">
+      <Name>HudBig</Name>
+      <Importer>FontDescriptionImporter</Importer>
+      <Processor>FontDescriptionProcessor</Processor>
+    </Compile>
+    <Compile Include="Fonts\HudMedium.spritefont">
+      <Name>HudMedium</Name>
+      <Importer>FontDescriptionImporter</Importer>
+      <Processor>FontDescriptionProcessor</Processor>
+    </Compile>
+    <Compile Include="Fonts\HudSmall.spritefont">
+      <Name>HudSmall</Name>
+      <Importer>FontDescriptionImporter</Importer>
+      <Processor>FontDescriptionProcessor</Processor>
+    </Compile>
+    <Compile Include="Fonts\Segoe12.spritefont">
+      <Name>Segoe12</Name>
+      <Importer>FontDescriptionImporter</Importer>
+      <Processor>FontDescriptionProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="blank.png">
+      <Name>blank</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <None Include="demoscreen.txt">
+      <Name>demoscreen</Name>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="gradient.png">
+      <Name>gradient</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Levels\0.txt">
+      <Name>0</Name>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Levels\1.txt">
+      <Name>1</Name>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Levels\old ones\2.txt">
+      <Name>2</Name>
+    </None>
+    <None Include="Levels\old ones\3.txt">
+      <Name>3</Name>
+    </None>
+    <None Include="Levels\old ones\4.txt">
+      <Name>4</Name>
+    </None>
+    <Compile Include="Mapeditor\apple.png">
+      <Name>apple</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Mapeditor\blank.png">
+      <Name>blank</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Mapeditor\block.png">
+      <Name>block</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Mapeditor\exit.png">
+      <Name>exit</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Mapeditor\menu_exit.png">
+      <Name>menu_exit</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Mapeditor\menu_move.png">
+      <Name>menu_move</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Mapeditor\menu_newdoc.png">
+      <Name>menu_newdoc</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Mapeditor\menu_random.png">
+      <Name>menu_random</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Mapeditor\menu_save.png">
+      <Name>menu_save</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Mapeditor\passableblock.png">
+      <Name>passableblock</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Mapeditor\platform.png">
+      <Name>platform</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Mapeditor\player.png">
+      <Name>player</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Mapeditor\powerup.png">
+      <Name>powerup</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Skins\0\Backgrounds\Layer0_0.png">
+      <Name>Layer0_0</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Skins\0\Backgrounds\Layer0_1.png">
+      <Name>Layer0_1</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Skins\0\Backgrounds\Layer0_2.png">
+      <Name>Layer0_2</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Skins\0\Backgrounds\Layer1_0.png">
+      <Name>Layer1_0</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Skins\0\Backgrounds\Layer1_1.png">
+      <Name>Layer1_1</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Skins\0\Backgrounds\Layer1_2.png">
+      <Name>Layer1_2</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Skins\0\Backgrounds\Layer2_0.png">
+      <Name>Layer2_0</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Skins\0\Backgrounds\Layer2_1.png">
+      <Name>Layer2_1</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Skins\0\Backgrounds\Layer2_2.png">
+      <Name>Layer2_2</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Skins\0\Overlays\you_died.png">
+      <Name>you_died</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Skins\0\Overlays\you_lose.png">
+      <Name>you_lose</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Skins\0\Overlays\you_win.png">
+      <Name>you_win</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <None Include="Skins\0\SkinMetadata.txt">
+      <Name>SkinMetadata</Name>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <Compile Include="Skins\0\Sounds\ExitReached.wma">
+      <Name>ExitReached</Name>
+      <Importer>WmaImporter</Importer>
+      <Processor>SoundEffectProcessor</Processor>
+    </Compile>
+    <Compile Include="Skins\0\Sounds\CoinCollected.wma">
+      <Name>CoinCollected</Name>
+      <Importer>WmaImporter</Importer>
+      <Processor>SoundEffectProcessor</Processor>
+    </Compile>
+    <Compile Include="Skins\0\Sounds\MonsterKilled.wma">
+      <Name>MonsterKilled</Name>
+      <Importer>WmaImporter</Importer>
+      <Processor>SoundEffectProcessor</Processor>
+    </Compile>
+    <Compile Include="Skins\0\Sounds\PlayerFall.wma">
+      <Name>PlayerFall</Name>
+      <Importer>WmaImporter</Importer>
+      <Processor>SoundEffectProcessor</Processor>
+    </Compile>
+    <Compile Include="Skins\0\Sounds\PowerUp.wma">
+      <Name>PowerUp</Name>
+      <Importer>WmaImporter</Importer>
+      <Processor>SoundEffectProcessor</Processor>
+    </Compile>
+    <Compile Include="Skins\0\Sprites\Enemies\Monster1\Die.png">
+      <Name>Die</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Skins\0\Sprites\Enemies\Monster1\Idle.png">
+      <Name>Idle</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Skins\0\Sprites\Enemies\Monster1\Run.png">
+      <Name>Run</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Skins\0\Sprites\Enemies\Ghost1\Die.png">
+      <Name>Die</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Skins\0\Sprites\Enemies\Ghost1\Idle.png">
+      <Name>Idle</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Skins\0\Sprites\Enemies\Ghost1\Run.png">
+      <Name>Run</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Skins\0\Sprites\Enemies\Monster2\Die.png">
+      <Name>Die</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Skins\0\Sprites\Enemies\Monster2\Idle.png">
+      <Name>Idle</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Skins\0\Sprites\Enemies\Monster2\Run.png">
+      <Name>Run</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Skins\0\Sprites\Enemies\Monster3\Die.png">
+      <Name>Die</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Skins\0\Sprites\Enemies\Monster3\Idle.png">
+      <Name>Idle</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Skins\0\Sprites\Enemies\Monster3\Run.png">
+      <Name>Run</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Skins\0\Sprites\Player\Celebrate.png">
+      <Name>Celebrate</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Skins\0\Sprites\Player\Die.png">
+      <Name>Die</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Skins\0\Sprites\Player\Idle.png">
+      <Name>Idle</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Skins\0\Sprites\Player\Jump.png">
+      <Name>Jump</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Skins\0\Sprites\Player\Run.png">
+      <Name>Run</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Skins\0\Tiles\BlockA0.png">
+      <Name>BlockA0</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Skins\0\Tiles\BlockA1.png">
+      <Name>BlockA1</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Skins\0\Tiles\BlockA2.png">
+      <Name>BlockA2</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Skins\0\Tiles\BlockA3.png">
+      <Name>BlockA3</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Skins\0\Tiles\BlockA4.png">
+      <Name>BlockA4</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Skins\0\Tiles\BlockA5.png">
+      <Name>BlockA5</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Skins\0\Tiles\BlockA6.png">
+      <Name>BlockA6</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Skins\0\Tiles\BlockB0.png">
+      <Name>BlockB0</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Skins\0\Tiles\BlockB1.png">
+      <Name>BlockB1</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Skins\0\Tiles\Exit.png">
+      <Name>Exit</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Skins\0\Tiles\Ladder.png">
+      <Name>Ladder</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Skins\0\Tiles\Platform.png">
+      <Name>Platform</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <None Include="Skins\1\SkinMetadata.txt">
+      <Name>SkinMetadata</Name>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <Compile Include="Skins\1\Sprites\Player\Celebrate.png">
+      <Name>Celebrate</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Skins\1\Sprites\Player\Die.png">
+      <Name>Die</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Skins\1\Sprites\Player\Idle.png">
+      <Name>Idle</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Skins\1\Sprites\Player\Jump.png">
+      <Name>Jump</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Skins\1\Sprites\Player\Run.png">
+      <Name>Run</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="splash.png">
+      <Name>splash</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="wolfgrowl.wav">
+      <Name>wolfgrowl</Name>
+      <Importer>WavImporter</Importer>
+      <Processor>SoundEffectProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Levels\old ones\5.txt">
+      <Name>5</Name>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Levels\old ones\6.txt">
+      <Name>6</Name>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="SavedLevels\0.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>0</Name>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Levels\old ones\7.txt">
+      <Name>7</Name>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Levels\old ones\8.txt">
+      <Name>8</Name>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Skins\0\Sprites\Life.png">
+      <Name>Life</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Skins\0\Sprites\Player\Attack.png">
+      <Name>Attack</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Skins\0\Sprites\Heart.png">
+      <Name>Heart</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Skins\0\Sprites\Timer.png">
+      <Name>Timer</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Levels\old ones\9.txt">
+      <Name>9</Name>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Levels\old ones\10.txt">
+      <Name>10</Name>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Skins\0\Tiles\Checkpoint1.png">
+      <Name>Checkpoint1</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Skins\0\Tiles\Checkpoint2.png">
+      <Name>Checkpoint2</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Skins\0\Sounds\PlayerHit.wav">
+      <Name>PlayerHit</Name>
+      <Importer>WavImporter</Importer>
+      <Processor>SoundEffectProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="spacer.png">
+      <Name>spacer</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.Xna.Framework.Content.Pipeline.AudioImporters, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=None" />
+    <Reference Include="Microsoft.Xna.Framework.Content.Pipeline.EffectImporter, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=None" />
+    <Reference Include="Microsoft.Xna.Framework.Content.Pipeline.FBXImporter, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=None" />
+    <Reference Include="Microsoft.Xna.Framework.Content.Pipeline.TextureImporter, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=None" />
+    <Reference Include="Microsoft.Xna.Framework.Content.Pipeline.VideoImporters, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=None" />
+    <Reference Include="Microsoft.Xna.Framework.Content.Pipeline.XImporter, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=None" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Skins\0\Sprites\Arrow.PNG">
+      <Name>Arrow</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Skins\0\Sprites\FallingTile.png">
+      <Name>FallingTile</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Skins\0\Backgrounds\Bricks.PNG">
+      <Name>Bricks</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="HUD.png">
+      <Name>HUD</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Skins\0\Sprites\Animated\tochaApagada.png">
+      <Name>tochaApagada</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Skins\0\Sprites\Animated\velasApagadas.png">
+      <Name>velasApagadas</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Skins\0\Sprites\Animated\velasGastas.png">
+      <Name>velasGastas</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Skins\0\Sprites\Animated\Candle.png">
+      <Name>Candle</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Skins\0\Sprites\Animated\torch.png">
+      <Name>torch</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Skins\0\Tiles\spring.png">
+      <Name>spring</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Skins\0\Sprites\Coin.png">
+      <Name>Coin</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Mapeditor\Coin.png">
+      <Name>Coin</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Skins\0\Tiles\MovingTile.png">
+      <Name>MovingTile</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Skins\0\Tiles\StoppedSpring.png">
+      <Name>StoppedSpring</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Skins\0\Sprites\Animated\WaterSurface.png">
+      <Name>WaterSurface</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Levels\old ones\11.txt">
+      <Name>11</Name>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Skins\0\Sprites\Player\Climbing.png">
+      <Name>Climbing</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Skins\0\Sprites\Key_Blue.png">
+      <Name>Key_Blue</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Skins\0\Sprites\Key_Green.png">
+      <Name>Key_Green</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Skins\0\Sprites\Key_Red.png">
+      <Name>Key_Red</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Skins\0\Sprites\Key_Yellow.png">
+      <Name>Key_Yellow</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Skins\0\Tiles\Terrain\DinoBones.png">
+      <Name>DinoBones</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Skins\0\Tiles\Terrain\Rock3.png">
+      <Name>Rock3</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Skins\0\Tiles\Terrain\Rock4.png">
+      <Name>Rock4</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Skins\0\Tiles\Terrain\Rock5.png">
+      <Name>Rock5</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Skins\0\Tiles\Terrain\RockCeiling1.png">
+      <Name>RockCeiling1</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Skins\0\Tiles\Terrain\RockCeiling2.png">
+      <Name>RockCeiling2</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Skins\0\Tiles\Terrain\RockCeiling3.png">
+      <Name>RockCeiling3</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Skins\0\Tiles\Terrain\Rock1.png">
+      <Name>Rock1</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Skins\0\Tiles\Terrain\Rock2.png">
+      <Name>Rock2</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Skins\0\Tiles\Terrain\RockSurface1.png">
+      <Name>RockSurface1</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Skins\0\Tiles\Terrain\RockSurface2.png">
+      <Name>RockSurface2</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Skins\0\Tiles\Terrain\Clay1.png">
+      <Name>Clay1</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Skins\0\Tiles\Terrain\Clay2.png">
+      <Name>Clay2</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Skins\0\Tiles\Terrain\Clay3.png">
+      <Name>Clay3</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Skins\0\Tiles\Terrain\Clay4.png">
+      <Name>Clay4</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Skins\0\Tiles\Terrain\Clay5.png">
+      <Name>Clay5</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Skins\0\Tiles\Terrain\ClayCeiling1.png">
+      <Name>ClayCeiling1</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Skins\0\Tiles\Terrain\ClayCeiling2.png">
+      <Name>ClayCeiling2</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Skins\0\Tiles\Terrain\ClayCeiling3.png">
+      <Name>ClayCeiling3</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Skins\0\Tiles\Terrain\ClaySurface1.png">
+      <Name>ClaySurface1</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Skins\0\Tiles\Terrain\ClaySurface2.png">
+      <Name>ClaySurface2</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Skins\0\Tiles\Terrain\ClaySurface3.png">
+      <Name>ClaySurface3</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Skins\0\Tiles\Terrain\Mud1.png">
+      <Name>Mud1</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Skins\0\Tiles\Terrain\Mud2.png">
+      <Name>Mud2</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Skins\0\Tiles\Terrain\Mud3.png">
+      <Name>Mud3</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Skins\0\Tiles\Terrain\Mud4.png">
+      <Name>Mud4</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Skins\0\Tiles\Terrain\Mud5.png">
+      <Name>Mud5</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Skins\0\Tiles\Terrain\MudCeiling1.png">
+      <Name>MudCeiling1</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Skins\0\Tiles\Terrain\MudCeiling2.png">
+      <Name>MudCeiling2</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Skins\0\Tiles\Terrain\MudCeiling3.png">
+      <Name>MudCeiling3</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Skins\0\Tiles\Terrain\MudSurface1.png">
+      <Name>MudSurface1</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Skins\0\Tiles\Terrain\MudSurface2.png">
+      <Name>MudSurface2</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Skins\0\Tiles\Terrain\MudSurface3.png">
+      <Name>MudSurface3</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Skins\0\Sprites\HUDClosedMap.png">
+      <Name>HUDClosedMap</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Skins\0\Sprites\HUDOpenMap.png">
+      <Name>HUDOpenMap</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Skins\0\Sprites\Map.png">
+      <Name>Map</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Skins\0\Sprites\Water.png">
+      <Name>Water</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Skins\0\Tiles\Terrain\RockSurface3.png">
+      <Name>RockSurface3</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Skins\0\Sprites\Player\Attack_sword.png">
+      <Name>Attack_sword</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Levels\old ones\12.txt">
+      <Name>12</Name>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Skins\0\Tiles\WoodBlock.png">
+      <Name>WoodBlock</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Skins\0\Sprites\MultipleState\lever.png">
+      <Name>lever</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Skins\0\Sprites\MultipleState\YellowDoor.png">
+      <Name>YellowDoor</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Skins\0\Sprites\MultipleState\BlueDoor.png">
+      <Name>BlueDoor</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Skins\0\Sprites\MultipleState\GreenDoor.png">
+      <Name>GreenDoor</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Skins\0\Sprites\MultipleState\RedDoor.png">
+      <Name>RedDoor</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Skins\0\Sprites\Brick.png">
+      <Name>Brick</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Skins\0\Backgrounds\Black.PNG">
+      <Name>Black</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Levels\2.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>2</Name>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Levels\3.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>3</Name>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Skins\0\Tiles\Rope.png">
+      <Name>Rope</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Skins\0\Sprites\Enemies\Flying1\Die.png">
+      <Name>Die</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Skins\0\Sprites\Enemies\Flying1\Idle.png">
+      <Name>Idle</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Skins\0\Sprites\Enemies\Flying1\Run.png">
+      <Name>Run</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Levels\4.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>4</Name>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Skins\0\Sounds\castle.wma">
+      <Name>castle</Name>
+      <Importer>WmaImporter</Importer>
+      <Processor>SongProcessor</Processor>
+    </Compile>
+    <Compile Include="Skins\0\Sounds\Dive.wma">
+      <Name>Dive</Name>
+      <Importer>WmaImporter</Importer>
+      <Processor>SoundEffectProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Skins\0\Sounds\arrow.wav">
+      <Name>arrow</Name>
+      <Importer>WavImporter</Importer>
+      <Processor>SoundEffectProcessor</Processor>
+    </Compile>
+    <Compile Include="Skins\0\Sounds\bounce.wav">
+      <Name>bounce</Name>
+      <Importer>WavImporter</Importer>
+      <Processor>SoundEffectProcessor</Processor>
+    </Compile>
+    <Compile Include="Skins\0\Sounds\Options.wav">
+      <Name>Options</Name>
+      <Importer>WavImporter</Importer>
+      <Processor>SoundEffectProcessor</Processor>
+    </Compile>
+    <Compile Include="Skins\0\Sounds\sword.wav">
+      <Name>sword</Name>
+      <Importer>WavImporter</Importer>
+      <Processor>SoundEffectProcessor</Processor>
+    </Compile>
+    <Compile Include="Skins\0\Sounds\swordUnderwater.wav">
+      <Name>swordUnderwater</Name>
+      <Importer>WavImporter</Importer>
+      <Processor>SoundEffectProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Skins\0\Sounds\arrowUnderwater.wav">
+      <Name>arrowUnderwater</Name>
+      <Importer>WavImporter</Importer>
+      <Processor>SoundEffectProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Skins\0\Sounds\PlayerKilled.wav">
+      <Name>PlayerKilled</Name>
+      <Importer>WavImporter</Importer>
+      <Processor>SoundEffectProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Skins\0\Sounds\PlayerJump.wav">
+      <Name>PlayerJump</Name>
+      <Importer>WavImporter</Importer>
+      <Processor>SoundEffectProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Skins\0\Sounds\arrowHit.mp3">
+      <Name>arrowHit</Name>
+      <Importer>Mp3Importer</Importer>
+      <Processor>SoundEffectProcessor</Processor>
+    </Compile>
+    <Compile Include="Skins\0\Sounds\FlyingEnemyKilled.wav">
+      <Name>FlyingEnemyKilled</Name>
+      <Importer>WavImporter</Importer>
+      <Processor>SoundEffectProcessor</Processor>
+    </Compile>
+    <Compile Include="Skins\0\Sounds\GhostKilled.mp3">
+      <Name>GhostKilled</Name>
+      <Importer>Mp3Importer</Importer>
+      <Processor>SoundEffectProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include=".NETFramework,Version=v4.0">
+      <Visible>False</Visible>
+      <ProductName>Microsoft .NET Framework 4 %28x86 and x64%29</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Windows.Installer.3.1">
+      <Visible>False</Visible>
+      <ProductName>Windows Installer 3.1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <Import Project="$(MSBuildExtensionsPath)\Microsoft\XNA Game Studio\$(XnaFrameworkVersion)\Microsoft.Xna.GameStudio.ContentPipeline.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
