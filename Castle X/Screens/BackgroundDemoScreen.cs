@@ -138,7 +138,7 @@ namespace CastleX
 
             // Load the level.
 
-            level = new Level(ScreenManager.Game.Services, levelPath, 100, 100, levelIndex, 1, ScreenManager);
+            level = new Level(ScreenManager.Game.Services, levelPath, levelIndex, 1, ScreenManager);
 
         }
 
@@ -169,7 +169,7 @@ namespace CastleX
                   
             level.Update(gameTime);
             base.Update(gameTime, false, false);
-            if (!level.Player.IsAlive)
+            if (!ScreenManager.Player.IsAlive)
             {
                 deathstatustimer += 1;
 

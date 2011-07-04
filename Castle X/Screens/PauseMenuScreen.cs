@@ -110,7 +110,7 @@ namespace CastleX
 
         void levelJumpMenuEntrySelected(object sender, EventArgs e)
         {
-            gamePlayScreen.LoadLevel(gamePlayScreen.LevelIndex+1, 1, gamePlayScreen.MyLevel.Player.Lives, gamePlayScreen.MyLevel.Score);
+            gamePlayScreen.LoadLevel(gamePlayScreen.LevelIndex+1, 1);
             OnCancel();
             gamePlayScreen.IsPaused = false;
         }

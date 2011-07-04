@@ -8,7 +8,7 @@ namespace CastleX
     /// <summary>
     /// The Exit point.
     /// </summary>
-    class Exit
+    public class Exit
     {
         ScreenManager screenManager;
         private Texture2D texture;

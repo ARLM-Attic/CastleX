@@ -7,7 +7,7 @@ namespace CastleX
     /// <summary>
     /// Controls the collision detection and response behavior of a tile.
     /// </summary>
-    enum TileCollision
+    public enum TileCollision
     {
         /// <summary>
         /// A passable tile is one which does not hinder player motion at all.
@@ -36,7 +36,7 @@ namespace CastleX
     /// <summary>
     /// Controls special collision detection or response behavior of a tile.
     /// </summary>
-    enum TileType
+    public enum TileType
     {
         Other = 1,  // Control tiles, exit tiles, etc.
         Brick = 2,  // Break arrows
@@ -47,7 +47,7 @@ namespace CastleX
     /// <summary>
     /// Stores the appearance and collision behavior of a tile.
     /// </summary>
-    struct Tile
+    public struct Tile
     {
         
         public Texture2D Texture;

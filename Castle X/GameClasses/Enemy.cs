@@ -9,19 +9,19 @@ namespace CastleX
     /// <summary>
     /// Facing direction along the X axis.
     /// </summary>
-    enum FaceDirection
+    public enum FaceDirection
     {
         Left = -1,
         Right = 1,
     }
 
-    enum VerticalDirection
+    public enum VerticalDirection
     {
         Up = -1,
         Down = 1,
     }
 
-    enum EnemyType
+    public enum EnemyType
     {
         Ghost = 1,
         Monster = 2,
@@ -32,7 +32,7 @@ namespace CastleX
     /// <summary>
     /// An evil monster hell-bent on impeding the progress of our fearless adventurer.
     /// </summary>
-    class Enemy
+    public class Enemy
     {
         public EnemyType Type;
         public Level Level
@@ -300,7 +300,7 @@ namespace CastleX
             if (!IsAlive)
                 sprite.PlayAnimation(dieAnimation);
             else
-            if (!Level.Player.IsAlive ||
+            if (!screenManager.Player.IsAlive ||
                       Level.ReachedExit ||
                       waitTime > 0)
                 sprite.PlayAnimation(idleAnimation);

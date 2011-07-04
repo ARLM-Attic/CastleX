@@ -12,7 +12,7 @@ namespace CastleX
     /// <summary>
     /// Our fearless adventurer!
     /// </summary>
-    class Player
+    public class Player
     {
         // Animations
         private Animation idleAnimation;
@@ -26,8 +26,6 @@ namespace CastleX
         private SpriteEffects flip = SpriteEffects.None;
         private AnimationPlayer sprite;
         private AnimationPlayer sprite_sword;
-
-        public Stream StatusString { get; set; }
 
         ScreenManager screenManager;
 
@@ -57,7 +55,7 @@ namespace CastleX
             get { return lives; }
             set { lives = value; }
         }
-        int lives;
+        int lives = 4;
 
         // Inventory
         public int YellowKeys = 0;
@@ -65,8 +63,10 @@ namespace CastleX
         public int RedKeys = 0;
         public int BlueKeys = 0;
         public bool hasMap = false;
-        public bool hasOxygen = false;
+        public bool hasOxygen = false; 
+        public bool hasCandle = false;
         public bool IsAlive;
+        public int Score = 0;
 
         // Powerup state
         private const float MaxPowerUpTime = 6.0f;
@@ -97,6 +97,12 @@ namespace CastleX
         public bool IsOutOfOxygen
         {
             get { return UnderwaterTime <= 0.0f; }
+        }
+
+        Boolean isGhost = false;
+        public bool IsGhost
+        {
+            get { return isGhost; }
         }
 
         private readonly Color[] poweredUpColors = {
@@ -296,14 +302,7 @@ namespace CastleX
             set { currentHealth = value; }
         }
         int currentHealth;
-
-        public int MaxHealth
-        {
-            get { return maxHealth; }
-            set { maxHealth = value; }
-        }
-        int maxHealth;
-
+        private const int MaxHealth = 5;
 
         private Rectangle localBounds;
         /// <summary>
@@ -342,16 +341,18 @@ namespace CastleX
         }
 
         /// <summary>
-        /// Constructors a new player.
+        /// Constructor for a new player.
         /// </summary>
-        public Player(ScreenManager ThisScreenManager, Level level, Vector2 position)
+        public Player(ScreenManager ThisScreenManager, Level level, Vector2 position, Boolean isGhost)
         {
             screenManager = ThisScreenManager;
             this.level = level;
+            this.isGhost = isGhost;
 
             LoadContent();
 
-            Reset(position);
+            Reset(position, level);
+
         }
 
         /// <summary>
@@ -359,8 +360,6 @@ namespace CastleX
         /// </summary>
         public void LoadContent()
         {
-            MaxHealth = 3;
-
             idleAnimation = new Animation(Level.screenManager.PlayerIdleTexture, 0.1f, true, screenManager.SkinSettings.FrameWidth_Player_Idle);
             runAnimation = new Animation(Level.screenManager.PlayerRunTexture, 0.1f, true, screenManager.SkinSettings.FrameWidth_Player_Run);
             climbingAnimation = new Animation(Level.screenManager.PlayerClimbingTexture, 0.1f, true, screenManager.SkinSettings.FrameWidth_Player_Climbing);
@@ -396,17 +395,17 @@ namespace CastleX
         /// Resets the player to life.
         /// </summary>
         /// <param name="position">The position to come to life at.</param>
-        public void Reset(Vector2 position)
+        public void Reset(Vector2 position, Level level)
         {
             Position = position;
             Velocity = Vector2.Zero;
             IsAlive = true;
-
             CurrentHealth = MaxHealth;
             if (level.Boss != null)
                 level.Boss.Position = level.bossStartPosition;
             sprite.PlayAnimation(idleAnimation);
-        }
+            this.level = level;
+         }
 
 
         #region Kill and Hurt methods
@@ -530,7 +529,7 @@ namespace CastleX
                 Kill();
 
 
-            if (currentHealth > 3)
+            if (currentHealth > MaxHealth)
             {
                 lives += 1;
                 currentHealth = 1;
@@ -649,7 +648,7 @@ namespace CastleX
                     {
                         // We need to check the tile behind the player, not what he is
                         // standing on
-                        if (level.GetTileCollisionBehindPlayer(level.Player.Position) == TileCollision.Ladder)
+                        if (level.GetTileCollisionBehindPlayer(screenManager.Player.Position) == TileCollision.Ladder)
                         {
                             isClimbing = true;
                             isJumping = false;
@@ -667,7 +666,7 @@ namespace CastleX
                     if (IsAlignedToLadder())
                     {
                         // Check the tile the player is standing on
-                        if (level.GetTileCollisionAtPosition(level.Player.Position) == TileCollision.Ladder)
+                        if (level.GetTileCollisionAtPosition(screenManager.Player.Position) == TileCollision.Ladder)
                         {
                             isClimbing = true;
                             isJumping = false;
@@ -687,7 +686,7 @@ namespace CastleX
                     isJumping = true;
                 //--------------------------------------------------------------------
 
-                if ((gamePadState.IsButtonDown(Buttons.A) || keyboardState.IsKeyDown(Keys.X)) && (previousGamePadState.IsButtonUp(Buttons.A) && (previousKeyboardState.IsKeyUp(Keys.X))))
+                if ((gamePadState.IsButtonDown(Buttons.RightTrigger) || keyboardState.IsKeyDown(Keys.X)) && (previousGamePadState.IsButtonUp(Buttons.RightTrigger) && (previousKeyboardState.IsKeyUp(Keys.X))))
                 {
                     if (AttackTime != MaxAttackTime)
                     {
@@ -696,7 +695,7 @@ namespace CastleX
                     }
                 }
 
-                if ((gamePadState.IsButtonDown(Buttons.Back) || keyboardState.IsKeyDown(Keys.C)) && (previousGamePadState.IsButtonUp(Buttons.Back) && (previousKeyboardState.IsKeyUp(Keys.C))))
+                if ((gamePadState.IsButtonDown(Buttons.LeftTrigger) || keyboardState.IsKeyDown(Keys.C)) && (previousGamePadState.IsButtonUp(Buttons.LeftTrigger) && (previousKeyboardState.IsKeyUp(Keys.C))))
                 {
                     level.addArrow(new Vector2(this.position.X, this.position.Y - screenManager.PlayerIdleTexture.Height / 2), isfacingleft);
                     if (isUnderWater)
@@ -730,6 +729,9 @@ namespace CastleX
             }
             if (isClimbing)
                 wasTouchingLadder = isTouchingLadder;
+
+            if (level.isUpsideDown)
+                movement.X *= -1;
         }
 
 
@@ -958,41 +960,47 @@ namespace CastleX
             // Reset flag to search for ground collision.
             isOnGround = false;
 
-            //For each potentially colliding movable tile.   
-            foreach (MovableTile movableTile in level.MovableTiles)
-            {
-                // Reset flag to search for movable tile collision.   
-                movableTile.PlayerIsOn = false;
-
-                //check to see if player is on tile.    
-                if ((BoundingRectangle.Bottom == movableTile.BoundingRectangle.Top + 2) &&
-                    (BoundingRectangle.Left >= movableTile.BoundingRectangle.Left - (BoundingRectangle.Width / 2) &&
-                    BoundingRectangle.Right <= movableTile.BoundingRectangle.Right + (BoundingRectangle.Width / 2)))
-                {
-                    movableTile.PlayerIsOn = true;
-                }
-                bounds = HandleCollision(bounds, TileCollision.Impassable, movableTile.BoundingRectangle);  
-            }
-
-            //For each potentially colliding spring.   
-            foreach (Spring spring in level.Springs)
-            {
-                // Reset flag to search for movable tile collision.   
-                spring.PlayerIsOn = false;
-
-                //check to see if player is on tile.    
-                if ((BoundingRectangle.Bottom == spring.BoundingRectangle.Top + 2) &&
-                    (BoundingRectangle.Left >= spring.BoundingRectangle.Left - (BoundingRectangle.Width / 2) &&
-                    BoundingRectangle.Right <= spring.BoundingRectangle.Right + (BoundingRectangle.Width / 2)))
-                {
-                     spring.PlayerIsOn = true;
-                }
-                bounds = HandleCollision(bounds, TileCollision.Impassable,spring.BoundingRectangle);
-            }
-
             //For each potentially colliding arrow.   
             foreach (Arrow arrow in level.arrows)
                 bounds = HandleCollision(bounds, TileCollision.Platform, arrow.BoundingRectangle);
+
+            // Only the real player uses moving platforms and springs
+            // "Cloned" ghost do not
+            if (!IsGhost)
+            {
+                //For each potentially colliding moving item 
+                foreach (MovingItem movingItem in level.MovingItems)
+                {
+                    // Reset flag to search for moving item  collision.   
+                    movingItem.PlayerIsOn = false;
+
+                    //check to see if player is on moving item     
+                    if ((BoundingRectangle.Bottom == movingItem.BoundingRectangle.Top + 2) &&
+                        (BoundingRectangle.Left >= movingItem.BoundingRectangle.Left - (BoundingRectangle.Width / 2) &&
+                        BoundingRectangle.Right <= movingItem.BoundingRectangle.Right + (BoundingRectangle.Width / 2)))
+                    {
+                        movingItem.PlayerIsOn = true;
+                    }
+                    bounds = HandleCollision(bounds, TileCollision.Impassable, movingItem.BoundingRectangle);
+                }
+
+                //For each potentially colliding spring.   
+                foreach (Spring spring in level.Springs)
+                {
+                    // Reset flag to search for spring collision.   
+                    spring.PlayerIsOn = false;
+
+                    //check to see if player is on tile.    
+                    if ((BoundingRectangle.Bottom == spring.BoundingRectangle.Top + 2) &&
+                        (BoundingRectangle.Left >= spring.BoundingRectangle.Left - (BoundingRectangle.Width / 2) &&
+                        BoundingRectangle.Right <= spring.BoundingRectangle.Right + (BoundingRectangle.Width / 2)))
+                    {
+                        spring.PlayerIsOn = true;
+                    }
+                    bounds = HandleCollision(bounds, TileCollision.Impassable, spring.BoundingRectangle);
+                }
+            }
+
 
             // For each potentially colliding tile,
             for (int y = topTile; y <= bottomTile; ++y)
@@ -1162,7 +1170,7 @@ namespace CastleX
         /// <summary>
         /// Draws the animated player.
         /// </summary>
-        public void Draw(GameTime gameTime, SpriteBatch spriteBatch)
+        public void Draw(GameTime gameTime, SpriteBatch spriteBatch, Color color)
         {
             // Flip the sprite to face the way we are moving.
             if (Velocity.X > 0)
@@ -1176,7 +1184,6 @@ namespace CastleX
                 isfacingleft = false;
             }
             // Calculate a tint color based on power up state.
-            Color color;
             if (IsPoweredUp)
             {
                 float t = ((float)gameTime.TotalGameTime.TotalSeconds + powerUpTime / MaxPowerUpTime) * 20.0f;
@@ -1191,8 +1198,6 @@ namespace CastleX
                 {
                     color = Color.Aqua;
                 }
-                else
-                    color = Color.White;
             }
 
             if (isAttacking)
@@ -1204,6 +1209,19 @@ namespace CastleX
             }            
             // Draw that sprite.
             sprite.Draw(gameTime, spriteBatch, Position, flip, color);
+
+            // if the player is underwater, draw remaining oxygen bar
+            if (isUnderWater)
+            {
+                int remainingOxygen = 0;
+                if(hasOxygen)
+                    remainingOxygen = (int) (UnderwaterTime * BoundingRectangle.Width / (MaxUnderwaterTime* 45)); 
+                else
+                    remainingOxygen = (int) (UnderwaterTime * BoundingRectangle.Width / MaxUnderwaterTime);
+
+                Rectangle oxygenBar = new Rectangle((int)BoundingRectangle.X, (int)BoundingRectangle.Y - Tile.Height, remainingOxygen, 4);
+                spriteBatch.Draw(screenManager.BlankTexture, oxygenBar, Color.Cyan);
+            }
             // Draw the sword if attacking
             if (screenManager.Settings.DebugMode) //  Show bounding box if debugging
             {
@@ -1217,6 +1235,7 @@ namespace CastleX
                 spriteBatch.Draw(screenManager.BlankTexture, Level.GetBounds(leftTile, bottomTile), new Color(125, 0, 0, 125));
                 spriteBatch.Draw(screenManager.BlankTexture, Level.GetBounds(rightTile, topTile), new Color(125, 0, 0, 125));
                 spriteBatch.Draw(screenManager.BlankTexture, Level.GetBounds(rightTile, bottomTile), new Color(125, 0, 0, 125));
+                screenManager.DrawShadowedString(spriteBatch, screenManager.Font, "Oxygen Left: " + UnderwaterTime, new Vector2(BoundingRectangle.Right, BoundingRectangle.Top), Color.White); 
             }
 
 
@@ -1231,7 +1250,7 @@ namespace CastleX
         public void Submerge()
         {
             if(hasOxygen)
-                UnderwaterTime = MaxUnderwaterTime * 30;
+                UnderwaterTime = MaxUnderwaterTime * 45;
             else
                 UnderwaterTime = MaxUnderwaterTime;
 

@@ -17,7 +17,7 @@ namespace CastleX
     /// The level owns the player and controls the game's win and lose
     /// conditions as well as scoring.
     /// </summary>
-    class Level : IDisposable
+    public class Level : IDisposable
     {
         // Physical structure of the level.
         private Tile[,] tiles;
@@ -25,15 +25,8 @@ namespace CastleX
         private String[][] layerNames = new String[3][];
         // The layer which entities are drawn on top of.
         private const int EntityLayer = 2;
-        //Texture2D mybox;
 
         // Entities in the level.
-        public Player Player
-        {
-            get { return player; }
-            set { player = value; }
-        }
-        Player player;
 
         public Boss Boss
         {
@@ -59,8 +52,8 @@ namespace CastleX
         public List<DeathTile> DeathTiles = new List<DeathTile>();
         public List<BossJumpTile> BossJumpTiles = new List<BossJumpTile>();
         //  Lista das plataformas móveis
-        public List<MovableTile> MovableTiles = new List<MovableTile>();
-        public Boolean MovableTilesAreActive = true;
+        public List<MovingItem> MovingItems = new List<MovingItem>();
+        public Boolean MovingItemsAreActive = true;
 
         public ScreenManager screenManager;
         // Key locations in the level.        
@@ -69,11 +62,10 @@ namespace CastleX
         private static readonly Point InvalidPosition = new Point(-1, -1);
         // Level game state.
         private Random random = new Random(354668); // Arbitrary, but constant seed
-        private float cameraPosition;
+        private Vector2 cameraPosition;
 
         bool IsBDown = false;
 
-        public float cameraPositionYAxis;
         //public TimeSpan TimeRemaining
         //{
         //    get { return timeRemaining; }
@@ -81,13 +73,6 @@ namespace CastleX
         //}
         //TimeSpan timeRemaining;
         int levelnumber = 0;
-
-        public int Score
-        {
-            get { return score; }
-            set { score = value; }
-        }
-        int score;
 
         //--- Exit to next level control
         public bool ReachedExit
@@ -187,10 +172,16 @@ namespace CastleX
         public Vector2 Checkpoint;
         public Vector2 bossStartPosition;
 
-        public bool StaticContentUpdated = false;
+#region special items control
+        // Magic mirror and the cloned player
+        public Vector2 magicMirrorPosition;
+        Player magicMirrorPlayerClone = null;
+        // controls if the screen is under effect of upsidedown mirror
+        public Boolean isUpsideDown = false; 
+#endregion
 
+        public bool StaticContentUpdated = false;
         public ContentManager content;
-        private const int StartingLives = 3;
         private SoundEffect exitReachedSound;
 
         int StallFPSTime = 0;
@@ -206,7 +197,7 @@ namespace CastleX
         /// <param name="path">
         /// The absolute path to the level file to be loaded.
         /// </param>
-        public Level(IServiceProvider serviceProvider, string path, int currentLives, int newscore, int levelNumber, int entranceNumber, ScreenManager myscreenmanager)
+        public Level(IServiceProvider serviceProvider, string path, int levelNumber, int entranceNumber, ScreenManager myscreenmanager)
         {
             screenManager = myscreenmanager;
 
@@ -231,18 +222,20 @@ namespace CastleX
                 //  Creates the player at the corresponding entrance number
                 if (entrances[i].EntranceNumber == entranceNumber)
                 {
-                    player = new Player(screenManager, this, entrances[i].Position);
+                    // There is only one player object, created when the first level is loaded
+                    if (screenManager.Player == null)
+                        screenManager.Player = new Player(screenManager, this, entrances[i].Position, false);
+                    else
+                    {
+                        screenManager.Player.Reset(entrances[i].Position, this);
+                    }
                     start = entrances[i].Position;
                     playerPositionFound = true;
                 }
             }
             if(!playerPositionFound)
                 throw new Exception(String.Format("Invalid player entrance code {0} at level {1}.", entranceNumber, levelNumber));
-
-            player.Lives = currentLives;
-            score = newscore;
-
-            
+           
             layers = new Layer[3];
             LoadLayers();
             //Load Sounds
@@ -269,7 +262,6 @@ namespace CastleX
             }
             catch
             {
-                //mybox = screenManager.DefaultBGTexture;
                 // Fail gracefully
             }
         }
@@ -574,27 +566,31 @@ namespace CastleX
                 case '0':
                     return LoadVarietyTile("RockCeiling", 3, TileCollision.Impassable, TileType.Transparent);
                 case 'B':
-                    return LoadMultipleStateItemTile(x, y, MultipleStateItemType.BlueDoor);
+                    return LoadMultipleStateItem(x, y, MultipleStateItemType.BlueDoor);
                 case 'b':
-                    return LoadItemTile(x, y, ItemType.BlueKey);
+                    return LoadItem(x, y, ItemType.BlueKey);
                 case 'C':
-                    return LoadItemTile(x, y, ItemType.Coin);
+                    return LoadItem(x, y, ItemType.Coin);
+                case 'd':
+                    return LoadItem(x, y, ItemType.MagicMirror);  // magic duplicating mirror
+                case 'D':
+                    return LoadMagicMirrorSpot(x, y);  // magic duplicating mirror cloning spot
                 // Various enemies
                 case 'E':
-                    return LoadEnemyTile(x, y, code);
+                    return LoadEnemy(x, y, code);
                 case 'F':
                     return LoadFallingTile(x, y);
                 case 'G':
-                    return LoadMultipleStateItemTile(x, y, MultipleStateItemType.GreenDoor);
+                    return LoadMultipleStateItem(x, y, MultipleStateItemType.GreenDoor);
                 case 'g':
-                    return LoadItemTile(x, y, ItemType.GreenKey);
+                    return LoadItem(x, y, ItemType.GreenKey);
                 case 'H':
                     return LoadHiddenTile(x, y, TileCollision.Impassable);
                 // Rope
                 case 'I':
                     return LoadTile(screenManager.RopeTexture, TileCollision.Ladder, TileType.Other);
                 case 'i':
-                    return LoadMultipleStateItemTile(x, y, MultipleStateItemType.Lever);
+                    return LoadMultipleStateItem(x, y, MultipleStateItemType.Lever);
                 case 'h':
                     return LoadHiddenTile(x, y, TileCollision.Platform);
                 case 'J':
@@ -603,34 +599,36 @@ namespace CastleX
                 case 'L':
                     return LoadTile(screenManager.LadderTexture, TileCollision.Ladder, TileType.Brick);
                 case 'l':
-                    return LoadItemTile(x, y, ItemType.Life);
+                    return LoadItem(x, y, ItemType.Life);
                 // Moveable Tile
                 case 'M':
-                    return LoadMovableTile(screenManager.MoveablePlatformTexture, x, y, TileCollision.Platform);
+                    return LoadMovingItem(screenManager.MoveablePlatformTexture, x, y, TileCollision.Platform);
                 case 'm':
-                    return LoadItemTile(x, y, ItemType.Map);
+                    return LoadItem(x, y, ItemType.Map);
                 case 'N':
-                    return LoadAnimatedItemTile(x, y, AnimatedItemType.Candle);
+                    return LoadAnimatedItem(x, y, AnimatedItemType.Candle);
                 case 'O':
-                    return LoadAnimatedItemTile(x, y, AnimatedItemType.Torch);
+                    return LoadAnimatedItem(x, y, AnimatedItemType.Torch);
                 case 'o':
-                    return LoadItemTile(x, y, ItemType.Oxygen);
+                    return LoadItem(x, y, ItemType.Oxygen);
                 case 'P':
-                    return LoadItemTile(x, y, ItemType.Powerup);
+                    return LoadItem(x, y, ItemType.Powerup);
                 case 'R':
-                    return LoadMultipleStateItemTile(x, y, MultipleStateItemType.RedDoor);
+                    return LoadMultipleStateItem(x, y, MultipleStateItemType.RedDoor);
                 case 'r':
-                    return LoadItemTile(x, y, ItemType.RedKey);
+                    return LoadItem(x, y, ItemType.RedKey);
                 case 's':
                     return LoadSpring(x, y);
                 case 'S':
                     return LoadBossTile(x, y);
                 case 'T':
-                    return LoadItemTile(x, y, ItemType.Trunk);
+                    return LoadItem(x, y, ItemType.Trunk);
+                case 'u':
+                    return LoadAnimatedItem(x, y, AnimatedItemType.UpsideDownSpell);
                 case 'V':
                     return LoadVanishingTile(x, y);
                 case 'W':
-                    return LoadAnimatedItemTile(x, y, AnimatedItemType.WaterSurface);
+                    return LoadAnimatedItem(x, y, AnimatedItemType.WaterSurface);
                 case 'w':
                     return LoadTile(screenManager.Water, TileCollision.Passable, TileType.Water);
                 case 'X':   // Exit
@@ -638,11 +636,11 @@ namespace CastleX
                 case 'x':   // Entrance
                     return LoadEntranceTile(x, y, code);
                 case 'Y':
-                    return LoadMultipleStateItemTile(x, y, MultipleStateItemType.YellowDoor);
+                    return LoadMultipleStateItem(x, y, MultipleStateItemType.YellowDoor);
                 case 'y':
-                    return LoadItemTile(x, y, ItemType.YellowKey);
+                    return LoadItem(x, y, ItemType.YellowKey);
                 case '+':
-                    return LoadItemTile(x, y, ItemType.Heart);
+                    return LoadMultipleStateItem(x, y, MultipleStateItemType.HealthPotion);
                 // Floating platform
                 case '-':
                     return LoadVarietyTile("Platform", 1, TileCollision.Platform, TileType.Brick);
@@ -830,7 +828,7 @@ namespace CastleX
         /// <summary>
         /// Instantiates an enemy and puts him in the level.
         /// </summary>
-        private Tile? LoadEnemyTile(int x, int y, string code)
+        private Tile? LoadEnemy(int x, int y, string code)
         {
             char enemyType = Convert.ToChar(code.Substring(0, 1));
             int enemyNumber;
@@ -871,7 +869,7 @@ namespace CastleX
         }
 
         /// <summary>
-        /// Instantiates an enemy and puts him in the level.
+        /// Instantiates a boss and puts him in the level - ONLY ONE PER LEVEL
         /// </summary>
         private Tile LoadBossTile(int x, int y)
         {
@@ -884,6 +882,16 @@ namespace CastleX
             return new Tile(null, TileCollision.Passable, TileType.Other, screenManager);
         }
 
+        /// <summary>
+        /// Instantiates a magic mirror destination (cloning) spot - ONLY ONE PER LEVEL
+        /// </summary>
+        private Tile? LoadMagicMirrorSpot(int x, int y)
+        {
+            Point position = GetBounds(x, y).Center;
+            magicMirrorPosition = new Vector2(position.X, position.Y);
+
+            return null;
+        }
         private Tile LoadDeathTile(string baseName, int x, int y)
         {
             Point position = GetBounds(x, y).Center;
@@ -891,10 +899,10 @@ namespace CastleX
             return new Tile(null, TileCollision.Impassable, TileType.Brick, screenManager);
         }
 
-        public Tile? LoadMovableTile(Texture2D texture, int x, int y, TileCollision collision)
+        public Tile? LoadMovingItem(Texture2D texture, int x, int y, TileCollision collision)
         {
             Point position = GetBounds(x, y).Center;//new Vector2(texture.Width / 2.0f, texture.Height / 2.0f);
-            MovableTiles.Add(new MovableTile(texture, screenManager, this, new Vector2(position.X, position.Y)));
+            MovingItems.Add(new MovingItem(texture, screenManager, this, new Vector2(position.X, position.Y)));
             return null;
         }
 
@@ -908,7 +916,7 @@ namespace CastleX
         /// <summary>
         /// Instantiates a item and puts it in the level.
         /// </summary>
-        private Tile? LoadItemTile(int x, int y, ItemType itemObject)
+        private Tile? LoadItem(int x, int y, ItemType itemObject)
         {
             Point position = GetBounds(x, y).Center;
             items.Add(new Item(screenManager, this, new Vector2(position.X, position.Y), itemObject));
@@ -920,28 +928,28 @@ namespace CastleX
             return null;
         }
 
-        private Tile LoadAnimatedItemTile(int x, int y, AnimatedItemType itemObject)
+        private Tile? LoadAnimatedItem(int x, int y, AnimatedItemType itemObject)
         {
             Point position = GetBounds(x, y).Center;
             animatedItems.Add(new AnimatedItem(screenManager, this, new Vector2(position.X, position.Y), itemObject, false));
-            return new Tile(null, TileCollision.Passable, TileType.Other, screenManager);
+            return null;
         }
 
-        private Tile LoadMultipleStateItemTile(int x, int y, MultipleStateItemType itemObject)
+        private Tile LoadMultipleStateItem(int x, int y, MultipleStateItemType itemObject)
         {
             multipleStateItems.Add(new MultipleStateItem(screenManager, this, x, y, itemObject));
 
-            //switch (itemObject)
-            //{
-            //    case MultipleStateItemType.YellowDoor:
-            //    case MultipleStateItemType.RedDoor:
-            //    case MultipleStateItemType.GreenDoor:
-            //    case MultipleStateItemType.BlueDoor:
-            //        return new Tile(null, TileCollision.Impassable, TileType.Other, screenManager);
-            //    case MultipleStateItemType.Lever:
-            //    default:
+            switch (itemObject)
+            {
+                case MultipleStateItemType.YellowDoor:
+                case MultipleStateItemType.RedDoor:
+                case MultipleStateItemType.GreenDoor:
+                case MultipleStateItemType.BlueDoor:
+                    return new Tile(null, TileCollision.Impassable, TileType.Other, screenManager);
+                case MultipleStateItemType.Lever:
+                default:
                     return new Tile(null, TileCollision.Passable, TileType.Other, screenManager);
-            //}
+            }
             
         }
 
@@ -1060,10 +1068,10 @@ namespace CastleX
         public void Update(GameTime gameTime)
         {
             // Pause while the player is dead or time is expired.
-            if (!Player.IsAlive )//|| TimeRemaining == TimeSpan.Zero)
+            if (!screenManager.Player.IsAlive)//|| TimeRemaining == TimeSpan.Zero)
             {
                 // Still want to perform physics on the player.
-                Player.ApplyPhysics(gameTime);
+                screenManager.Player.ApplyPhysics(gameTime);
             }
             //else if (ReachedExit)
             //{
@@ -1077,7 +1085,10 @@ namespace CastleX
             else
             {
             //    timeRemaining -= gameTime.ElapsedGameTime;
-                Player.Update(gameTime);
+                screenManager.Player.Update(gameTime);
+                if (magicMirrorPlayerClone != null)
+                    magicMirrorPlayerClone.Update(gameTime);
+
                 UpdateItems(gameTime);
                 UpdateFallingTiles(gameTime);
 
@@ -1097,7 +1108,7 @@ namespace CastleX
                     UpdateExits(gameTime, true);
                     UpdateDeathTiles(gameTime, true);
                     UpdateSprings(gameTime, true);
-                    UpdateMovableTiles(gameTime);
+                    UpdateMovingItems(gameTime);
                     StaticContentUpdated = true;
                 }
                 else
@@ -1108,9 +1119,15 @@ namespace CastleX
                     UpdateExits(gameTime, false);
                     UpdateDeathTiles(gameTime, true);
                     UpdateSprings(gameTime, true);
-                    UpdateMovableTiles(gameTime);
+                    UpdateMovingItems(gameTime);
                     StaticContentUpdated = true;
                 }
+
+                UpdateArrows(gameTime);
+                UpdateAnimatedItems(gameTime);
+                UpdateMultipleStateItems(gameTime);
+                UpdateBosses(gameTime);
+                UpdateEnemies(gameTime);
 
                 if (Keyboard.GetState().IsKeyDown(Keys.F) && !IsBDown)
                 {
@@ -1129,29 +1146,12 @@ namespace CastleX
                         StallFPSTime = 0;
                     }
                 }
-
-                UpdateArrows(gameTime);
-                UpdateAnimatedItems(gameTime);
-                UpdateMultipleStateItems(gameTime);
-                UpdateBosses(gameTime);
                 // Falling off the bottom of the level kills the player.
-                if (Player.BoundingRectangle.Top >= Height * Tile.Height)
+                if (screenManager.Player.BoundingRectangle.Top >= Height * Tile.Height)
                     OnPlayerKilled(false);
-
-                UpdateEnemies(gameTime);
 
                 if (!allCoinsCollected && coinsRemaining == 0)
                     allCoinsCollected = true;
-
-                // The player has reached the exit if they are standing on the ground and
-                // his bounding rectangle contains the center of the exit tile. They can only
-                // exit when they have collected all of the coins.
-                //if (Player.IsAlive &&
-                //    Player.IsOnGround &&
-                //    Player.BoundingRectangle.Contains(exit))
-                //{
-                //    OnExitReached();
-                //}
             }
 
             // Clamp the time remaining at zero.
@@ -1159,19 +1159,19 @@ namespace CastleX
             //    timeRemaining = TimeSpan.Zero;
         }
 
-        private void UpdateMovableTiles(GameTime gameTime)
+        private void UpdateMovingItems(GameTime gameTime)
         {
-            if (MovableTilesAreActive)
+            if (MovingItemsAreActive)
             {
-                for (int i = 0; i < MovableTiles.Count; ++i)
+                for (int i = 0; i < MovingItems.Count; ++i)
                 {
-                    MovableTile movableTile = MovableTiles[i];
-                    movableTile.Update(gameTime);
+                    MovingItem movingItem = MovingItems[i];
+                    movingItem.Update(gameTime);
 
-                    if (movableTile.PlayerIsOn)
+                    if (movingItem.PlayerIsOn)
                     {
                         //Make player move with tile if the player is on top of tile   
-                        player.Position += movableTile.Velocity;
+                        screenManager.Player.Position += movingItem.Velocity;
                     }
                 }
             }
@@ -1231,9 +1231,9 @@ namespace CastleX
 
                 item.Update(gameTime);
 
-                if (item.BoundingCircle.Intersects(Player.BoundingRectangle))
+                if (item.BoundingCircle.Intersects(screenManager.Player.BoundingRectangle))
                 {
-                    OnItemCollected(item, Player, i);
+                    OnItemCollected(item, screenManager.Player, i);
                 }
             }
         }
@@ -1249,10 +1249,10 @@ namespace CastleX
 
                 item.Update(gameTime);
 
-                if (item.BoundingCircle.Intersects(Player.BoundingRectangle))
+                if (item.BoundingCircle.Intersects(screenManager.Player.BoundingRectangle))
                 {
                     if(item.isCollectable)
-                        OnAnimatedItemCollected(item, Player, i);
+                        OnAnimatedItemCollected(item, screenManager.Player, i);
                 }
             }
         }
@@ -1266,10 +1266,22 @@ namespace CastleX
             {
                 MultipleStateItem item = multipleStateItems[i];
 
-                if (item.BoundingRectangle.Intersects(Player.BoundingRectangle))
-                    item.OnCollected(Player, i);
+                if (magicMirrorPlayerClone != null)
+                {
+                    // also test collision with player clone (created by Magic Mirror)
+                    if (item.BoundingRectangle.Intersects(screenManager.Player.BoundingRectangle) ||
+                        item.BoundingRectangle.Intersects(this.magicMirrorPlayerClone.BoundingRectangle))
+                        item.OnCollected(screenManager.Player, i);
+                    else
+                        item.OnNotCollected();
+                }
                 else
-                    item.OnNotCollected();
+                {
+                    if (item.BoundingRectangle.Intersects(screenManager.Player.BoundingRectangle))
+                        item.OnCollected(screenManager.Player, i);
+                    else
+                        item.OnNotCollected();
+                }
             }
         }
         /// <summary>
@@ -1324,10 +1336,10 @@ namespace CastleX
                 }
 
                 // Remove arrows when touching moveable tiles
-                for (int j = 0; j < MovableTiles.Count; ++j)
+                for (int j = 0; j < MovingItems.Count; ++j)
                 {
-                    if (arrow.BoundingRectangle.Intersects(MovableTiles[j].BoundingRectangle))
-                        arrow.onTouched(MovableTiles[j]);
+                    if (arrow.BoundingRectangle.Intersects(MovingItems[j].BoundingRectangle))
+                        arrow.onTouched(MovingItems[j]);
                 }
             }
         }
@@ -1339,9 +1351,9 @@ namespace CastleX
         {
             for (int i = 0; i < exits.Count; ++i)
             {
-                if (exits[i].BoundingRectangle.Intersects(Player.BoundingRectangle))
+                if (exits[i].BoundingRectangle.Intersects(screenManager.Player.BoundingRectangle))
                 {
-                    OnExitReached(Player, exits[i]);
+                    OnExitReached(screenManager.Player, exits[i]);
                 }
             }
         }
@@ -1357,7 +1369,7 @@ namespace CastleX
 
                 boss.Update(gameTime);
 
-                if (boss.BoundingRectangle.Intersects(Player.BoundingRectangle))
+                if (boss.BoundingRectangle.Intersects(screenManager.Player.BoundingRectangle))
                 {
                     OnPlayerKilled(true);
                 }
@@ -1388,7 +1400,7 @@ namespace CastleX
                 if (updateEntireObject)
                 vanishingTile.Update(gameTime);
 
-                if (vanishingTile.BoundingRectangle.Intersects(Player.BoundingRectangle))
+                if (vanishingTile.BoundingRectangle.Intersects(screenManager.Player.BoundingRectangle))
                 {
                     VanishingTiles.RemoveAt(i--);
                 }
@@ -1406,7 +1418,7 @@ namespace CastleX
                 if (updateEntireObject)
                 hiddenTile.Update(gameTime);
 
-                if (hiddenTile.BoundingRectangle.Intersects(Player.BoundingRectangle))
+                if (hiddenTile.BoundingRectangle.Intersects(screenManager.Player.BoundingRectangle))
                 {
                     hiddenTile.OnCollected();
                 }
@@ -1427,8 +1439,8 @@ namespace CastleX
                 if (spring.PlayerIsOn)
                 {
                     //Make player move with tile if the player is on top of tile   
-                    player.DoSpringJump(gameTime);
-                    spring.OnColide(player);
+                    screenManager.Player.DoSpringJump(gameTime);
+                    spring.OnColide(screenManager.Player);
                 }
             }
         }
@@ -1444,7 +1456,7 @@ namespace CastleX
                 if (updateEntireObject)
                 deathTile.Update(gameTime);
 
-                if (deathTile.BoundingRectangle.Intersects(Player.BoundingRectangle))
+                if (deathTile.BoundingRectangle.Intersects(screenManager.Player.BoundingRectangle))
                 {
                     OnPlayerKilled(true);
                 }
@@ -1457,12 +1469,12 @@ namespace CastleX
             {
                 FallingTile FallingTile = FallingTiles[i];
                 FallingTile.Update(gameTime);
-                if (FallingTile.BoundingCircle.Intersects(Player.BoundingRectangle))
+                if (FallingTile.BoundingCircle.Intersects(screenManager.Player.BoundingRectangle))
                 {
-                    if (!Player.IsPoweredUp)
+                    if (!screenManager.Player.IsPoweredUp)
                         OnPlayerHurt(true, 1);
                 }
-                else if (FallingTile.TriggerRectangle.Intersects(Player.BoundingRectangle))
+                else if (FallingTile.TriggerRectangle.Intersects(screenManager.Player.BoundingRectangle))
                 {
                     OnFallingTileFalling(FallingTile);
                 }
@@ -1502,10 +1514,11 @@ namespace CastleX
                     }
                     else
                         enemy.Update(gameTime);
-                    // Touching an enemy instantly kills the player
-                    if (enemy.IsAlive && enemy.BoundingRectangle.Intersects(Player.BoundingRectangle))
+                    // Touching an enemy hurts the player. The Health is lower down according to the enemy's strenght defined on the level file
+                    if (enemy.IsAlive && (enemy.BoundingRectangle.Intersects(screenManager.Player.BoundingRectangle)
+                        || enemy.BoundingRectangle.Intersects(magicMirrorPlayerClone.BoundingRectangle)))
                     {
-                        if (Player.IsPoweredUp)
+                        if (screenManager.Player.IsPoweredUp)
                         {
                             OnEnemyKilled(enemy);
                         }
@@ -1514,9 +1527,10 @@ namespace CastleX
                             OnPlayerHurt(enemy, true);
                         }
                     }
-                    if (enemy.IsAlive && enemy.BoundingRectangle.Intersects(Player.MeleeRectangle))
+                    if (enemy.IsAlive && (enemy.BoundingRectangle.Intersects(screenManager.Player.MeleeRectangle)
+                        || enemy.BoundingRectangle.Intersects(magicMirrorPlayerClone.MeleeRectangle)))
                     {
-                        if (Player.isAttacking)
+                        if (screenManager.Player.isAttacking)
                             OnEnemyKilled(enemy);
                     }
 
@@ -1599,7 +1613,7 @@ namespace CastleX
         /// </param>
         private void OnPlayerHurt(Enemy hurtBy, bool playHurtSound)
         {
-            player.Hurt(playHurtSound, hurtBy.ContactDamage);
+            screenManager.Player.Hurt(playHurtSound, hurtBy.ContactDamage);
         }
 
         /// <summary>
@@ -1611,7 +1625,7 @@ namespace CastleX
         /// </param>
         private void OnPlayerKilled(bool playKilledSound)
         {
-            Player.Kill(playKilledSound);
+            screenManager.Player.Kill(playKilledSound);
         }
 
         /// <summary>
@@ -1624,8 +1638,14 @@ namespace CastleX
         /// <param name="contactdamage">Amaount of damage to inflict upon Players Health.</param>
         private void OnPlayerHurt(bool playKilledSound, int contactdamage)
         {
-            Player.Hurt(playKilledSound, contactdamage);
+            screenManager.Player.Hurt(playKilledSound, contactdamage);
         }
+
+         public void onMagicMirrorPlayerCloned()
+         {
+             magicMirrorPlayerClone = new Player(screenManager, this, magicMirrorPosition, true);
+         }
+             
         /// <summary>
         /// Called when the player reaches the level's exit.
         /// </summary>
@@ -1658,7 +1678,7 @@ namespace CastleX
         /// </summary>
         public void StartNewLife()
         {
-            if (player.Lives <= 0)
+            if (screenManager.Player.Lives <= 0)
             {
                 /////////////////////GO TO MAIN MENU///////////////////
                 BackgroundScreen backgroundScreen = new BackgroundScreen();
@@ -1670,10 +1690,10 @@ namespace CastleX
                 if (Boss != null)
                     Boss.Position = bossStartPosition;
                 if (Checkpoint != Vector2.Zero)
-                    Player.Reset(Checkpoint);
+                    screenManager.Player.Reset(Checkpoint, this);
                 else
-                    Player.Reset(start);
-                player.Lives--;
+                    screenManager.Player.Reset(start, this);
+                screenManager.Player.Lives--;
             }
         }
         #endregion
@@ -1681,15 +1701,27 @@ namespace CastleX
         #region Draw
         public void Draw(GameTime gameTime, SpriteBatch spriteBatch)
         {
+            Matrix cameraTransform = Matrix.Identity;
+
             // Draw layers
             for (int i = 0; i <= EntityLayer; ++i)
-               layers[i].Draw(spriteBatch, cameraPosition);
+               layers[i].Draw(spriteBatch, cameraPosition.X);
                 
             spriteBatch.End();
 
             ScrollCamera(spriteBatch.GraphicsDevice.Viewport);
-          //   Matrix cameraTransform = Matrix.CreateTranslation(-cameraPosition, -cameraPositionYAxis + ScreenManager.HUDHeight, 0.0f); //*** HUDHeight in pixels
-            Matrix cameraTransform = Matrix.CreateTranslation(-cameraPosition, -cameraPositionYAxis, 0.0f); 
+
+            if (this.isUpsideDown)
+            {
+                cameraTransform *= Matrix.CreateRotationZ((float)Math.PI);
+                cameraTransform *= Matrix.CreateTranslation(this.Width * Tile.Width , this.Height * Tile.Height, 0.0f);
+                cameraTransform *= Matrix.CreateTranslation(- cameraPosition.X, -cameraPosition.Y, 0.0f);
+                //  Matrix.CreateTranslation((this.Width * Tile.Width) , (this.Height * Tile.Height), 0.0f);
+            } 
+            else
+                cameraTransform = Matrix.CreateTranslation(-cameraPosition.X, -cameraPosition.Y, 0.0f); 
+
+            // If the player is under the upside down spell, modifies the screen accordingly
             spriteBatch.Begin(SpriteBlendMode.AlphaBlend, SpriteSortMode.Immediate, SaveStateMode.None, cameraTransform);
 
             DrawTiles(spriteBatch);
@@ -1717,24 +1749,72 @@ namespace CastleX
                 bossJumpTile.Draw(gameTime, spriteBatch);
             foreach (DeathTile deathTile in DeathTiles)
                deathTile.Draw(gameTime, spriteBatch, !screenManager.isRunningSlow);
-            foreach (MovableTile movableTile in MovableTiles)
-                movableTile.Draw(gameTime, spriteBatch);
-            Player.Draw(gameTime, spriteBatch);
+            foreach (MovingItem movingItem in MovingItems)
+                movingItem.Draw(gameTime, spriteBatch);
             foreach (Enemy enemy in enemies)
                 enemy.Draw(gameTime, spriteBatch);
 
+            // Draw the Player on top of everything
+            screenManager.Player.Draw(gameTime, spriteBatch, Color.White);
+            // If there is a player clone (created with magic mirror), draw it
+            if (magicMirrorPlayerClone != null)
+                magicMirrorPlayerClone.Draw(gameTime, spriteBatch, new Color (Color.WhiteSmoke, 125));
 
             spriteBatch.End();
+
             //  Draw HUD
             spriteBatch.Begin();
-            spriteBatch.Draw(screenManager.HUDTexture, Vector2.Zero, Color.White);
+                spriteBatch.Draw(screenManager.HUDTexture, Vector2.Zero, Color.White);
+                // Show debug info, if in debug mode
+                if (screenManager.Settings.DebugMode)
+                {
+                    Viewport viewport = spriteBatch.GraphicsDevice.Viewport;
+                    // Write the camera position
+                    string debugCameraPos = "Camera Pos: " + cameraPosition.ToString();
+                    float lineHeight = screenManager.Font.MeasureString(debugCameraPos).Y;
+                    spriteBatch.DrawString(screenManager.Font, debugCameraPos, 
+                            new Vector2((viewport.Width - screenManager.Font.MeasureString(debugCameraPos).X) - 10, 
+                                         viewport.Height - lineHeight * 2 - 10), Color.White);
+                    string maxCameraX = "Max Camera X: " + (Tile.Width * Width - viewport.Width).ToString();
+                    string maxCameraY = "Max Camera Y: " + (Tile.Height * (Height - 6) - (viewport.Height - ScreenManager.HUDHeight)).ToString();
+                    spriteBatch.DrawString(screenManager.Font, maxCameraX,
+                        new Vector2((viewport.Width - screenManager.Font.MeasureString(maxCameraX).X) - 10, 
+                                         viewport.Height - lineHeight * 3 - 10), Color.White);
+                    spriteBatch.DrawString(screenManager.Font, maxCameraY,
+                        new Vector2((viewport.Width - screenManager.Font.MeasureString(maxCameraY).X) - 10,
+                                         viewport.Height - lineHeight * 4 - 10), Color.White);
+
+                    string playerPos = "Player Pos: " + screenManager.Player.Position.ToString();
+                    spriteBatch.DrawString(screenManager.Font, playerPos,
+                        new Vector2((viewport.Width - screenManager.Font.MeasureString(playerPos).X) - 10,
+                                         viewport.Height - lineHeight * 5 - 10), Color.White);
+
+                    
+                    // Draw the edges of the vieweing part of the screen -> CODE REPEATED FROM ScrollCamera method!
+                    //const float ViewMargin = 0.35f;
+                    //float marginWidth = viewport.Width * ViewMargin;
+                    //float marginHeight = viewport.Height * ViewMargin;
+
+                    //float marginLeft = cameraPosition.X + marginWidth;
+                    //float marginRight = cameraPosition.X + viewport.Width - marginWidth;
+                    //float marginTop = cameraPosition.Y + marginHeight + ScreenManager.HUDHeight;
+                    //float marginBottom = cameraPosition.Y + viewport.Height - marginHeight + ScreenManager.HUDHeight;
+
+                    spriteBatch.Draw(screenManager.CrossHairTexture, cameraPosition, Color.White);
+                    //spriteBatch.Draw(screenManager.CrossHairTexture, new Vector2(marginLeft, marginTop), Color.White);
+                    //spriteBatch.Draw(screenManager.CrossHairTexture, new Vector2(marginRight, marginTop), Color.White);
+                    //spriteBatch.Draw(screenManager.CrossHairTexture, new Vector2(marginLeft, marginBottom), Color.White);
+                    //spriteBatch.Draw(screenManager.CrossHairTexture, new Vector2(marginRight, marginBottom), Color.White); 
+
+
+                }
             spriteBatch.End();
 
             // Draw background layers
             spriteBatch.Begin();
             for (int i = EntityLayer + 1; i < layers.Length; ++i)
-                layers[i].Draw(spriteBatch, cameraPosition);
-            //spriteBatch.End();   //*** Estava comentado...
+                layers[i].Draw(spriteBatch, cameraPosition.X);
+            //spriteBatch.End();   //*** Don't blame me, the original code was already commented... And fails if the comment is removed!
         }
 
         /// <summary>
@@ -1743,34 +1823,94 @@ namespace CastleX
         private void ScrollCamera(Viewport viewport)
         {
             const float ViewMargin = 0.35f;
+            Vector2 cameraMovement = Vector2.Zero;
+            Vector2 maxCameraPosition = Vector2.Zero;
+            Vector2 minCameraPosition = Vector2.Zero;
+
             // Calculate the edges of the screen.
             float marginWidth = viewport.Width * ViewMargin;
             float marginHeight = viewport.Height * ViewMargin;  
-            float marginLeft = cameraPosition + marginWidth;
-            float marginRight = cameraPosition + viewport.Width - marginWidth;
+            float marginLeft = cameraPosition.X + marginWidth;
+            float marginRight = cameraPosition.X + viewport.Width - marginWidth;
+            float marginTop = cameraPosition.Y + marginHeight + ScreenManager.HUDHeight;  
+            float marginBottom =(cameraPosition.Y + viewport.Height - marginHeight) + ScreenManager.HUDHeight ;
 
-            float marginTop = cameraPositionYAxis + marginHeight ; 
-            float marginBottom = cameraPositionYAxis + viewport.Height - marginHeight;  
+            //if (this.isUpsideDown)
+            //{
+            //    marginTop = cameraPosition.Y + marginHeight ;
+            //    marginBottom= (cameraPosition.Y + viewport.Height - marginHeight) ;
+            //}
 
             // Calculate how far to scroll when the player is near the edges of the screen.
-            float cameraMovement = 0.0f;
-            if (Player.Position.X < marginLeft)
-                cameraMovement = Player.Position.X - marginLeft;
-            else if (Player.Position.X > marginRight)
-                cameraMovement = Player.Position.X - marginRight;
-            float cameraMovementY = 0.0f;
-            if (Player.Position.Y < marginTop + ScreenManager.HUDHeight)//- ScreenManager.HUDHeight) //above the top margin  // *** HUD
-                cameraMovementY = Player.Position.Y - (marginTop + ScreenManager.HUDHeight);//(marginTop - ScreenManager.HUDHeight);
-            else if (Player.Position.Y > marginBottom + ScreenManager.HUDHeight) //below the bottom margin  
-                cameraMovementY = Player.Position.Y - (marginBottom + ScreenManager.HUDHeight);  
-
+            // X axis (horizontal)
+            //if (this.isUpsideDown)
+            //{
+            //    if (screenManager.Player.Position.X < marginLeft)
+            //        cameraMovement.X = screenManager.Player.Position.X - marginLeft;
+            //    else if (screenManager.Player.Position.X > marginRight)
+            //        cameraMovement.X = screenManager.Player.Position.X - marginRight;
+            //}
+            //else
+            {
+                if (screenManager.Player.Position.X < marginLeft)
+                    cameraMovement.X = screenManager.Player.Position.X - marginLeft;
+                else if (screenManager.Player.Position.X > marginRight)
+                    cameraMovement.X = screenManager.Player.Position.X - marginRight;
+            }
+            // Y Axis (Vertical)
+            //if (this.isUpsideDown)
+            //{
+            //    if (screenManager.Player.Position.Y < marginTop)// //above the top margin  
+            //        cameraMovement.Y = screenManager.Player.Position.Y - marginTop;//(marginTop - ScreenManager.HUDHeight);
+            //    else if (screenManager.Player.Position.Y > marginBottom) //below the bottom margin  
+            //        cameraMovement.Y = screenManager.Player.Position.Y - marginBottom;
+            //}
+            //else
+            {
+                if (screenManager.Player.Position.Y < marginTop)// //above the top margin  
+                    cameraMovement.Y = screenManager.Player.Position.Y - marginTop ;//
+                else if (screenManager.Player.Position.Y > marginBottom) //below the bottom margin  
+                    cameraMovement.Y = screenManager.Player.Position.Y - marginBottom ;
+            }
             // Update the camera position, but prevent scrolling off the ends of the level.
-            float maxCameraPosition = Tile.Width * Width - viewport.Width;
-            cameraPosition = MathHelper.Clamp(cameraPosition + cameraMovement, 0.0f, maxCameraPosition);
+            // X Axis (Horizontal)
+           maxCameraPosition.X = Tile.Width * Width - viewport.Width;
+           minCameraPosition.X = 0;
+           if (this.isUpsideDown)
+            {
+            //    maxCameraPosition.X = Tile.Width * Width;
+            //    minCameraPosition.X = viewport.Width;
+                cameraPosition.X = cameraPosition.X - cameraMovement.X;
+            }
+            else
+            {
+                cameraPosition.X = cameraPosition.X + cameraMovement.X;
+            }
+            cameraPosition.X = MathHelper.Clamp(cameraPosition.X, minCameraPosition.X, maxCameraPosition.X);
 
+            // Y Axis (Vertical)
+            //if (this.isUpsideDown)
+            //{
+            //    maxCameraPosition.Y = Tile.Height * (Height - 6) - (viewport.Height - ScreenManager.HUDHeight) ;
+            //    minCameraPosition.Y = -ScreenManager.HUDHeight + Tile.Height;
+            //}
+            //else
+            {
+                maxCameraPosition.Y = Tile.Height * (Height - 6) - (viewport.Height - ScreenManager.HUDHeight);
+                minCameraPosition.Y = -ScreenManager.HUDHeight;
+            }
 
-            float maxCameraPositionYOffset = Tile.Height * (Height-6) - (viewport.Height - ScreenManager.HUDHeight); //*** HUD
-            cameraPositionYAxis = MathHelper.Clamp(cameraPositionYAxis + cameraMovementY, -ScreenManager.HUDHeight, maxCameraPositionYOffset); 
+            if (this.isUpsideDown)
+            {
+                 minCameraPosition.Y =  -ScreenManager.HUDHeight + Tile.Height;
+                cameraPosition.Y = cameraPosition.Y - cameraMovement.Y;
+            }
+            else
+            {
+                cameraPosition.Y = cameraPosition.Y + cameraMovement.Y;
+            }
+            cameraPosition.Y = MathHelper.Clamp(cameraPosition.Y, minCameraPosition.Y, maxCameraPosition.Y);
+
         }
     
 
@@ -1781,11 +1921,24 @@ namespace CastleX
         /// </summary>
         private void DrawTiles(SpriteBatch spriteBatch)
         {
+            int left = 0;
+            int right = 0;
+
             // Calculate the visible range of tiles.
-            int left = (int)Math.Floor(cameraPosition / Tile.Width);
-            int right = left + spriteBatch.GraphicsDevice.Viewport.Width / Tile.Width;
-            right = Math.Min(right, Width - 1);
-    
+            if (isUpsideDown)
+            {
+                
+                right = Width - (int)Math.Floor(cameraPosition.X / Tile.Width)+2 ;
+                right = Math.Min(right, Width - 1);
+                left = Math.Max(0,right - spriteBatch.GraphicsDevice.Viewport.Width / Tile.Width - 2);
+              //  
+            }
+            else
+            {
+                left = Math.Max(0,(int)Math.Floor(cameraPosition.X / Tile.Width)-2);
+                right = left + spriteBatch.GraphicsDevice.Viewport.Width / Tile.Width+2;
+                right = Math.Min(right, Width - 1);
+            }
             // For each tile position
             for (int y = 0; y < Height; ++y)
             {
@@ -1801,8 +1954,8 @@ namespace CastleX
                         if(tiles[x, y].Collision == TileCollision.Ladder)
                             if (tiles[x + 1, y].Texture != null)
                                 spriteBatch.Draw(tiles[x+1, y].Texture, position, Color.White);
-                        // When drawing the terrain bottom tiles (stalactites), repeat the texture bellow under the terrain
-                        //  used also with any tile with transparent parts
+                        // When drawing transparent tiles (such as the terrain bottom tiles = stalactites), repeat the texture bellow under the tile
+                        //  used with any tile with transparent parts
                         if (tiles[x, y].Type == TileType.Transparent)
                         {
                             if (tiles[x, y + 1].Texture != null)

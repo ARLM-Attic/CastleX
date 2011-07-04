@@ -6,13 +6,13 @@ using System.Diagnostics;
 
 namespace CastleX
 {
-    enum ArrowDirection
+    public enum ArrowDirection
     {
         Left = 1,
         Right = 2,
     }
 
-    class Arrow
+    public class Arrow
     {
         private Texture2D texture;
         private Vector2 origin;
@@ -130,7 +130,7 @@ namespace CastleX
                 level.arrows.Remove(this);
         }
 
-        public void onTouched(MovableTile touchedBy)
+        public void onTouched(MovingItem touchedBy)
         {
             level.arrows.Remove(this);
         }

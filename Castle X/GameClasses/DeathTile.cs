@@ -9,7 +9,7 @@ namespace CastleX
     /// <summary>
     /// A valuable item the player can collect.
     /// </summary>
-    class DeathTile
+    public class DeathTile
     {
         ScreenManager screenManager;
 

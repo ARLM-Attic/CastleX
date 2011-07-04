@@ -1,15 +1,25 @@
 ﻿Version Log
 
----------------------------------------------------------------------
-Next Version features
----------------------------------------------------------------------
-* 4 new levels
-* new feature: oxygen bottle allow player to move underwater for a while
 * new objects: various windows, spider web
 * new magic object: teleporter (teleports player within the screen)
-* new magic object: Mirror (creates a player clone)
-* new magic object: twisted potion (turn screen upside down)
 * code reviewed for new enemy: jumping enemy (based on old "Boss" code)
+ ---------------------------------------------------------------------
+V 2.0 - finished in XX.XXX.2011, by Alexandre Lobão - http://www.AlexandreLobao.com
+---------------------------------------------------------------------
+* New object: Magic mirror, creates a clone of the player
+* New player property and behaviour: Cloned player can hurt and get hurted by enemies, but not jump on springs or moving platforms
+* New level: Magic mirror test
+* New feature: animated items can be collectable
+* New animated item: UpsideDown spell, makes screen goes upside down when collected
+* New level: upside down spell test, allow collecting oxygen to get underwater key on level 0
+* Many "Load" methods at Level class refactored to have more informative names
+* New HUD with new background, quantity for 4 keys, player lives, and 4 slots for special behaviour collectable items (Oxygen, Candle, and two to be defined)
+* New Health HUD: Health potion shows current player health
+* New special behaviour collectable item: Oxygen bottle, allows player to stay underwater for 45 seconds
+* New special behaviour collectable item: Candle, allows player to see in darkness (will be used in next version)
+* New door behaviour: Player image do not overlap door if doesn't have a key, door bug (only open from right direction) fixed
+* New multiple state item:  collectable health potion
+* New HUD: remaining oxygen bar appears over the head of the player when underwater
  
 ---------------------------------------------------------------------
 V 1.1 - finished in 25.May.2011, by Alexandre Lobão - http://www.AlexandreLobao.com

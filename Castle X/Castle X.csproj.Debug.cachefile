@@ -70,7 +70,6 @@ GameContent\Skins\1\Sprites\Player\Run.xnb
 GameContent\splash.xnb
 GameContent\Skins\0\Sprites\Life.xnb
 GameContent\Skins\0\Sprites\Player\Attack.xnb
-GameContent\Skins\0\Sprites\Heart.xnb
 GameContent\Skins\0\Sprites\Timer.xnb
 GameContent\Skins\0\Tiles\Checkpoint1.xnb
 GameContent\Skins\0\Tiles\Checkpoint2.xnb
@@ -147,6 +146,11 @@ GameContent\Skins\0\Sprites\Enemies\Flying1\Die.xnb
 GameContent\Skins\0\Sprites\Enemies\Flying1\Idle.xnb
 GameContent\Skins\0\Sprites\Enemies\Flying1\Run.xnb
 GameContent\Banner.xnb
+GameContent\Skins\0\Sprites\Oxygen.xnb
+GameContent\Skins\0\Sprites\magicMirror.xnb
+GameContent\Skins\0\Sprites\upsideDownSpell.xnb
+GameContent\Skins\0\Sprites\upsideDownSpell2.xnb
+GameContent\Skins\0\Sprites\upsideDownSpell3.xnb
 GameContent\Skins\0\Sounds\ExitReached.xnb
 GameContent\Skins\0\Sounds\CoinCollected.xnb
 GameContent\Skins\0\Sounds\MonsterKilled.xnb
@@ -167,6 +171,11 @@ GameContent\Skins\0\Sounds\PlayerJump.xnb
 GameContent\Skins\0\Sounds\FlyingEnemyKilled.xnb
 GameContent\Skins\0\Sounds\arrowHit.xnb
 GameContent\Skins\0\Sounds\GhostKilled.xnb
+GameContent\crosshair.xnb
+GameContent\Skins\0\Sprites\Candle.xnb
+GameContent\Skins\0\Sprites\HUDCandle.xnb
+GameContent\Skins\0\Sprites\HUDOxygen.xnb
+GameContent\Skins\0\Sprites\MultipleState\HealthPotion.xnb
 GameContent\Skins\0\Sounds\castle.wma
 GameContent\demoscreen.txt
 GameContent\Levels\0.txt
@@ -176,5 +185,10 @@ GameContent\Skins\1\SkinMetadata.txt
 GameContent\SavedLevels\0.txt
 GameContent\Levels\2.txt
 GameContent\Levels\3.txt
+GameContent\Levels\8.txt
+GameContent\Levels\9.txt
 GameContent\Levels\4.txt
+GameContent\Levels\5.txt
+GameContent\Levels\7.txt
+GameContent\Levels\6.txt
 GameContent\gradient.png

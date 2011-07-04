@@ -6,18 +6,19 @@ using System.Diagnostics;
 
 namespace CastleX
 {
-    enum AnimatedItemType
+    public enum AnimatedItemType
     {
         Candle = 1,
         Torch = 2,
-        WaterSurface = 3
+        WaterSurface = 3,
+        UpsideDownSpell = 4
     }
 
     
     /// <summary>
     /// An animated item 
     /// </summary>
-    class AnimatedItem
+    public class AnimatedItem
     {
         ScreenManager screenManager;
 
@@ -111,6 +112,10 @@ namespace CastleX
                     isBouncing = false;
                     this.basePosition = new Vector2(position.X + Tile.Width*1.5f, position.Y+Tile.Height*1.5f);
                     break;
+                case AnimatedItemType.UpsideDownSpell:
+                    Color = Color.White;
+                    isBouncing = true;
+                    break;
             }
         }
 
@@ -133,6 +138,11 @@ namespace CastleX
                 case AnimatedItemType.WaterSurface:
                     spriteSheet = new Animation(Level.screenManager.WaterSurface, 0.3f, true, Tile.Width*4);
                     bounce = 0 ;
+                    break;
+                case AnimatedItemType.UpsideDownSpell:
+                    spriteSheet = new Animation(Level.screenManager.UpsideDownSpell, 0.1f, true);
+                    bounce = 0 - height / 4;
+                    isCollectable = true;
                     break;
             }
 
@@ -174,6 +184,7 @@ namespace CastleX
         /// </param>
         public void OnCollected(Player collectedBy, int itemnumber)
         {
+
             switch (ItemType)
             {
                 case AnimatedItemType.Candle:
@@ -191,7 +202,17 @@ namespace CastleX
                 case AnimatedItemType.WaterSurface:
                     PlaySound();
                     break;
+
+                case AnimatedItemType.UpsideDownSpell:
+                    PlaySound();
+                    level.isUpsideDown = !level.isUpsideDown;
+                    break;
             }
+
+            // Remove item if it is collectable
+            if (isCollectable)
+                level.animatedItems.Remove(this);
+
         }
 
         //  Do any action needed when object is touched

@@ -17,8 +17,11 @@
     <IsWebBootstrapper>false</IsWebBootstrapper>
     <ManifestCertificateThumbprint>0265A26EE4ECEABD189540306E2B4CEFB04662AB</ManifestCertificateThumbprint>
     <ManifestKeyFile>CastleX.pfx</ManifestKeyFile>
-    <GenerateManifests>true</GenerateManifests>
+    <GenerateManifests>false</GenerateManifests>
     <SignManifests>false</SignManifests>
+    <StartupObject>CastleX.Program</StartupObject>
+    <TargetZone>LocalIntranet</TargetZone>
+    <ApplicationManifest>Properties\app.manifest</ApplicationManifest>
     <PublishUrl>D:\BC\Meus Documentos\Jogos\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
@@ -38,6 +41,7 @@
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
+    <TargetFrameworkSubset>Full</TargetFrameworkSubset>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <OutputPath>bin\x86\Debug</OutputPath>
@@ -86,7 +90,7 @@
     <Compile Include="GameClasses\Exit.cs" />
     <Compile Include="GameClasses\Layer.cs" />
     <Compile Include="GameClasses\Level.cs" />
-    <Compile Include="GameClasses\MovableTile.cs" />
+    <Compile Include="GameClasses\MovingItem.cs" />
     <Compile Include="Managers\GameScreen.cs" />
     <Compile Include="GameClasses\Player.cs" />
     <Compile Include="Managers\InputState.cs" />
@@ -98,6 +102,8 @@
     <Compile Include="Screens\BackgroundDemoScreen.cs" />
     <Compile Include="Screens\LevelEditorScreen.cs" />
     <Compile Include="Screens\NumberScreen.cs" />
+    <None Include="app.config" />
+    <None Include="Properties\app.manifest" />
     <None Include="Screens\LevelEditorScreeen_old.cs" />
     <Compile Include="Screens\GameplayScreen.cs" />
     <Compile Include="Screens\LevelSelectScreen.cs" />

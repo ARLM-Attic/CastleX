@@ -6,20 +6,21 @@ using System.Diagnostics;
 
 namespace CastleX
 {
-    enum MultipleStateItemType
+    public enum MultipleStateItemType
     {
         Lever = 1,
         BlueDoor = 2,
         GreenDoor = 3,
         RedDoor = 4,
-        YellowDoor = 5
+        YellowDoor = 5,
+        HealthPotion = 6
     }
 
     
     /// <summary>
     /// A valuable item the player can collect.
     /// </summary>
-    class MultipleStateItem
+    public class MultipleStateItem
     {
         ScreenManager screenManager;
 
@@ -41,8 +42,8 @@ namespace CastleX
         /// </summary>
         public int State
         {
-            get;
-            set;
+            get {return sprite.FrameIndex + 1;}
+            set {sprite.FrameIndex = value - 1;}
         }
 
         private Vector2 Position;
@@ -73,16 +74,29 @@ namespace CastleX
         {
             get
             {
-                int left = (int)Math.Round(Position.X - sprite.Origin.X) ;
-                int top = (int)Math.Round(Position.Y - sprite.Origin.Y) ;
-
-                return new Rectangle(left, top, spriteSheet.FrameWidth, spriteSheet.FrameHeight);
+                int left = (int)Math.Round(Position.X - sprite.Origin.X);
+                int top = (int)Math.Round(Position.Y - sprite.Origin.Y);
+                switch (ItemType)
+                {
+                    case MultipleStateItemType.YellowDoor:
+                    case MultipleStateItemType.RedDoor:
+                    case MultipleStateItemType.GreenDoor:
+                    case MultipleStateItemType.BlueDoor:
+                        left -= spriteSheet.FrameWidth /2;
+                        return new Rectangle(left, top, spriteSheet.FrameWidth*2, spriteSheet.FrameHeight);
+                    default:
+                        return new Rectangle(left, top, spriteSheet.FrameWidth, spriteSheet.FrameHeight);
+                }
             }
         }
 
         public MultipleStateItem(ScreenManager ThisScreenManager, Level level,int x, int y, MultipleStateItemType spriteName)
-        {                   
-            Point position = level.GetBounds(x, y).Center;
+        {
+            Point position;   
+            if(level != null)
+                 position = level.GetBounds(x, y).Center;
+            else
+                position = new Point(x, y);
             tileX = x; tileY = y;
             screenManager = ThisScreenManager;
             this.level = level;
@@ -101,26 +115,30 @@ namespace CastleX
             switch (spriteName)
             {
                 case MultipleStateItemType.Lever:
-                    spriteSheet = new Animation(Level.screenManager.Lever, 0.1f, false);
-                    ChangeStateSound = level.screenManager.CoinCollectedSound;
+                    spriteSheet = new Animation(screenManager.Lever, 0.1f, false);
+                    ChangeStateSound = screenManager.CoinCollectedSound;
                     this.Position = new Vector2(position.X, position.Y + Tile.Height/2 );
-                    // If there is a lever on the level, the movable tiles are stopped by default
-                    level.MovableTilesAreActive = false;
+                    // If there is a lever on the level, the moving items are stopped by default
+                    level.MovingItemsAreActive = false;
                     break;
                 case MultipleStateItemType.YellowDoor:
-                    spriteSheet = new Animation(Level.screenManager.YellowDoor, 0.1f, false, 32);
+                    spriteSheet = new Animation(screenManager.YellowDoor, 0.1f, false, 32);
                     this.Position = new Vector2(position.X , position.Y + Tile.Height / 2);
                     break;
                 case MultipleStateItemType.RedDoor:
-                    spriteSheet = new Animation(Level.screenManager.RedDoor, 0.1f, false, 32);
+                    spriteSheet = new Animation(screenManager.RedDoor, 0.1f, false, 32);
                     this.Position = new Vector2(position.X, position.Y + Tile.Height / 2);
                     break;
                 case MultipleStateItemType.GreenDoor:
-                    spriteSheet = new Animation(Level.screenManager.GreenDoor, 0.1f, false, 32);
+                    spriteSheet = new Animation(screenManager.GreenDoor, 0.1f, false, 32);
                     this.Position = new Vector2(position.X, position.Y + Tile.Height / 2);
                     break;
                 case MultipleStateItemType.BlueDoor:
-                    spriteSheet = new Animation(Level.screenManager.BlueDoor, 0.1f, false, 32);
+                    spriteSheet = new Animation(screenManager.BlueDoor, 0.1f, false, 32);
+                    this.Position = new Vector2(position.X, position.Y + Tile.Height / 2);
+                    break;
+                case MultipleStateItemType.HealthPotion:
+                    spriteSheet = new Animation(screenManager.HealthPotionTexture, 0.1f, false, 32);
                     this.Position = new Vector2(position.X, position.Y + Tile.Height / 2);
                     break;
             }
@@ -145,7 +163,7 @@ namespace CastleX
                         sprite.FrameIndex++;
                         if (sprite.FrameIndex > spriteSheet.FrameCount - 1)
                             sprite.FrameIndex = 0;
-                        level.MovableTilesAreActive = !level.MovableTilesAreActive;
+                        level.MovingItemsAreActive = !level.MovingItemsAreActive;
                     }
                     break;
                 case MultipleStateItemType.YellowDoor:
@@ -157,8 +175,8 @@ namespace CastleX
                             sprite.FrameIndex = 1; // only changes the state (to "open door") once
                             //level.ChangeTileCollision(tileX, tileY, TileCollision.Passable);
                             // make passable the invisible obstacles after the door 
-                            level.ChangeTileCollision(tileX + 1, tileY, TileCollision.Passable);
-                            level.ChangeTileCollision(tileX + 1, tileY-1, TileCollision.Passable);
+                            level.ChangeTileCollision(tileX, tileY, TileCollision.Passable);
+                            level.ChangeTileCollision(tileX, tileY-1, TileCollision.Passable);
                         }
                         //else
                         //{
@@ -174,7 +192,7 @@ namespace CastleX
                         collectedBy.RedKeys--;
                         sprite.FrameIndex = 1; // only changes the state (to "open door") once
                         level.ChangeTileCollision(tileX, tileY, TileCollision.Passable);
-                        level.ChangeTileCollision(tileX, tileY - 2, TileCollision.Passable);
+                        level.ChangeTileCollision(tileX, tileY - 1, TileCollision.Passable);
                     }
                     break;
                 case MultipleStateItemType.GreenDoor:
@@ -183,7 +201,7 @@ namespace CastleX
                         collectedBy.GreenKeys--;
                         sprite.FrameIndex = 1; // only changes the state (to "open door") once
                         level.ChangeTileCollision(tileX, tileY, TileCollision.Passable);
-                        level.ChangeTileCollision(tileX, tileY - 2, TileCollision.Passable);
+                        level.ChangeTileCollision(tileX, tileY - 1, TileCollision.Passable);
                     }
                     break;
 
@@ -193,8 +211,13 @@ namespace CastleX
                         collectedBy.BlueKeys--;
                         sprite.FrameIndex = 1; // only changes the state (to "open door") once
                         level.ChangeTileCollision(tileX, tileY, TileCollision.Passable);
-                        level.ChangeTileCollision(tileX, tileY - 2, TileCollision.Passable);
+                        level.ChangeTileCollision(tileX, tileY - 1, TileCollision.Passable);
                     }
+                    break;
+                case MultipleStateItemType.HealthPotion:
+                    level.multipleStateItems.RemoveAt(itemnumber--);
+                    collectedBy.CurrentHealth += 1;
+                    PlaySound();
                     break;
 
             }
@@ -223,7 +246,7 @@ namespace CastleX
                         sprite.FrameIndex++;
                         if (sprite.FrameIndex > spriteSheet.FrameCount - 1)
                             sprite.FrameIndex = 0;
-                        level.MovableTilesAreActive = !level.MovableTilesAreActive;
+                        level.MovingItemsAreActive = !level.MovingItemsAreActive;
                         break;
                 }
             }

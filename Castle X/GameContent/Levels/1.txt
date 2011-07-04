@@ -26,7 +26,7 @@ X2000,x3,,,#####...........
 ##,,,,,,,,,,,,,,,,##
 ##,,,,,,,,,,,,,,,,##
 ,,,,,,,,,,,,,,,,,,##
-X1000,,,,,,,,,,,,,,,,,,x5,X1002,
+X4000,,,,,,,,,,,,,,,,,,x5,X1002,
 ,x1,,,,,,,,,,,,,,,,,,,
 ###,,,,,####,,,,,,##
 5!=,,,,,=###,,,,,,##
@@ -45,8 +45,8 @@ X1000,,,,,,,,,,,,,,,,,,x5,X1002,
 !!=,,,,,=###,,g,,,,##
 7!##################
 wwwwwwwwwwwwwwwwwwww
-X3000wwwwwwwwwwwwwwwwwwwX6002w
-wx2wwwwwwwwwwwwwwwwwx6ww
+X3000wx2wwwwwwwwwwwwwwwwwwX6002w
+wwwwwwwwwwwwwwwwwwx6ww
 2!2!2!2!2!2!2!2!2!2!
 @tit.Way up
 @des.Do your way out of the pits

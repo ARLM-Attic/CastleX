@@ -9,7 +9,7 @@ namespace CastleX
     /// <summary>
     /// A item that makes the boss jump.
     /// </summary>
-    class BossJumpTile
+    public class BossJumpTile
     {
         ScreenManager screenManager;
         private Texture2D texture;

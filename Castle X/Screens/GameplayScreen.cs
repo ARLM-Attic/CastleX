@@ -41,6 +41,7 @@ namespace CastleX
         private Texture2D winOverlay;
         private Texture2D loseOverlay;
         private Texture2D diedOverlay;
+        private MultipleStateItem healthHUD;  // player health HUD textures
 
         // Meta-level game state.
         private int levelIndex = 0;
@@ -66,14 +67,14 @@ namespace CastleX
             set { ispaused = value; }
         }
 
-        public Level MyLevel
-        {
+        //public Level MyLevel
+        //{
 
-            get { return myLevel; }
-            set { myLevel = value; }
-        }
+        //    get { return myLevel; }
+        //    set { myLevel = value; }
+        //}
 
-        Level myLevel;
+      //  Level myLevel;
         bool playSavedLevels = false;
         bool introloaded = false;
 
@@ -140,8 +141,10 @@ namespace CastleX
             winOverlay = ScreenManager.You_WinTexture;
             loseOverlay = ScreenManager.You_LoseTexture;
             diedOverlay = ScreenManager.You_DiedTexture;
+            // Load HUD textures / objects
+            healthHUD = new MultipleStateItem(ScreenManager, level, 448, 44, MultipleStateItemType.HealthPotion);
 
-            LoadLevel(levelIndex, 1, StartingLives, 0);
+            LoadLevel(levelIndex, 1);
             introisup = true;
             introloaded = false;
             // A real game would probably have more content than this sample, so
@@ -202,7 +205,7 @@ namespace CastleX
             //        }
             //    }
             //}
-            if (level.Score > 8000 && !ScreenManager.Settings.LevelJumpUnlocked && !leveljumpunlocked)
+            if (ScreenManager.Player.Score > 8000 && !ScreenManager.Settings.LevelJumpUnlocked && !leveljumpunlocked)
             {
                 if (!ScreenManager.Settings.DebugMode)
                 ScreenManager.Settings.LevelJumpUnlocked = true;
@@ -260,13 +263,13 @@ namespace CastleX
 
                 // Load next level without waiting for any user input
                  if (level.ReachedExit)
-                     LoadLevel(level.NextLevel, level.ExitNumber, level.Player.Lives + 1, level.Score);
+                     LoadLevel(level.NextLevel, level.ExitNumber);
                  else
                 // Perform the appropriate action to advance the game and
                 // to get the player back to playing.
                 if (!wasContinuePressed && continuePressed)
                 {
-                    if (!level.Player.IsAlive)
+                    if (!ScreenManager.Player.IsAlive)
                     {
                         level.StartNewLife();
                     }
@@ -293,7 +296,7 @@ namespace CastleX
         }
 
 
-        public void LoadLevel(int levelNumber, int exitNumber, int currentLives, int score)
+        public void LoadLevel(int levelNumber, int exitNumber)
         {
             // Find the path of the next level.
             string levelPath = "";
@@ -376,14 +379,14 @@ namespace CastleX
                 level.Dispose();
 
             // Load the level.
-            level = new Level(ScreenManager.Game.Services, levelPath, currentLives, score, levelIndex, exitNumber, ScreenManager);
-            myLevel = level;
+            level = new Level(ScreenManager.Game.Services, levelPath, levelIndex, exitNumber, ScreenManager);
+            //myLevel = level;
         }
 
         private void ReloadCurrentLevel(int currentLives)
         {
             --currentLives;
-            LoadLevel(levelIndex, 1, currentLives, level.Score);
+            LoadLevel(levelIndex, 1);
         }
 
         /// <summary>
@@ -395,19 +398,20 @@ namespace CastleX
                                                Color.Black, 0, 0);
 
             level.Draw(gameTime, spriteBatch);
-            DrawHud(spriteBatch);
+            DrawHud(gameTime, spriteBatch);
 
             // If the game is transitioning on or off, fade it out to black.
             if (TransitionPosition > 0)
                 ScreenManager.FadeBackBufferToBlack(spriteBatch, 255 - TransitionAlpha);
         }
 
-        private void DrawHud(SpriteBatch spriteBatch)
+        private void DrawHud(GameTime gameTime, SpriteBatch spriteBatch)
         {
             Rectangle titleSafeArea = ScreenManager.GraphicsDevice.Viewport.TitleSafeArea;
             Vector2 hudLocation = new Vector2(titleSafeArea.X, titleSafeArea.Y);
             Vector2 center = new Vector2(titleSafeArea.X + titleSafeArea.Width / 2.0f,
                                          titleSafeArea.Y + titleSafeArea.Height / 2.0f);
+
             float fontsize = ScreenManager.Font.MeasureString("Test").Y / 2;
 
             // Draw time remaining. Uses modulo division to cause blinking when the
@@ -429,23 +433,50 @@ namespace CastleX
             // Draw score
             //ScreenManager.DrawShadowedString(spriteBatch, ScreenManager.Font, "Score: " + level.Score.ToString(), hudLocation + new Vector2(0.0f, 0.0f), Color.Yellow);
             // Draw Level and Lives on the right side
-            //ScreenManager.DrawShadowedString(spriteBatch, ScreenManager.Font, "Level: " + levelIndex, hudLocation + new Vector2(rightcolumn, 0.0f), Color.Yellow);
-            //ScreenManager.DrawShadowedString(spriteBatch, ScreenManager.Font, "Lives: " + level.Player.Lives.ToString(), hudLocation + new Vector2(rightcolumn, fontsize * 1.2f), Color.Yellow);
-            //ScreenManager.DrawShadowedString(spriteBatch, ScreenManager.Font, "Score: " + level.Score.ToString(), hudLocation + new Vector2(0.0f, 0.0f), Color.Yellow);
-            ScreenManager.DrawShadowedString(spriteBatch, ScreenManager.Font, "x " + level.Score.ToString(), new Vector2(430, 50), Color.Yellow);
-            ScreenManager.DrawShadowedString(spriteBatch, ScreenManager.Font, "x " + level.Player.Lives.ToString(), new Vector2(430, 10), Color.Yellow);
-            ScreenManager.DrawShadowedString(spriteBatch, ScreenManager.Font, "+ " + level.Player.CurrentHealth.ToString(), new Vector2(430, 30), Color.Yellow);
+            ScreenManager.DrawShadowedString(spriteBatch, ScreenManager.Font, ScreenManager.Player.Score.ToString(), new Vector2(420, 42), Color.Yellow);
+            ScreenManager.DrawShadowedString(spriteBatch, ScreenManager.Font, ScreenManager.Player.Lives.ToString() , new Vector2(420, 18), Color.Yellow);
+         //   ScreenManager.DrawShadowedString(spriteBatch, ScreenManager.Font, "." + ScreenManager.Player.CurrentHealth.ToString() , new Vector2(430, 18), Color.Yellow);
+            //Vector2 HealthPosition = new Vector2(420, 20);
+            //int offset = 0;
+            //for (int i = 1; i <= ScreenManager.Player.CurrentHealth; ++i)
+            //{
+             //   spriteBatch.Draw(ScreenManager.HeartIconTexture, HealthPosition, Color.White);
+            //    HealthPosition.X += 20;
+            //    offset = i;
+            //}
 
-            //  Number of each Key 
-            ScreenManager.DrawShadowedString(spriteBatch, ScreenManager.Font, "x " + level.Player.YellowKeys.ToString(), new Vector2(350, 10), Color.Yellow);
-            ScreenManager.DrawShadowedString(spriteBatch, ScreenManager.Font, "x " + level.Player.GreenKeys.ToString(), new Vector2(350, 30), Color.Yellow);
-            ScreenManager.DrawShadowedString(spriteBatch, ScreenManager.Font, "x " + level.Player.RedKeys.ToString(), new Vector2(350, 50), Color.Yellow);
+
+            //  Draw quantity of each Key in inventory
+            ScreenManager.DrawShadowedString(spriteBatch, ScreenManager.Font, ScreenManager.Player.YellowKeys.ToString() , new Vector2(300, 18), Color.Yellow);
+            ScreenManager.DrawShadowedString(spriteBatch, ScreenManager.Font, ScreenManager.Player.GreenKeys.ToString() , new Vector2(300, 42), Color.Yellow);
+            ScreenManager.DrawShadowedString(spriteBatch, ScreenManager.Font, ScreenManager.Player.RedKeys.ToString(), new Vector2(357, 18), Color.Yellow);
+            ScreenManager.DrawShadowedString(spriteBatch, ScreenManager.Font, ScreenManager.Player.BlueKeys.ToString(), new Vector2(357, 42), Color.Yellow);
+
+            //  Draw items in inventory
+            if (ScreenManager.Player.hasOxygen)
+                spriteBatch.Draw(ScreenManager.HUDOxygenTexture, new Vector2(486, 21), Color.White);
+
+            if (ScreenManager.Player.hasCandle)
+                spriteBatch.Draw(ScreenManager.HUDCandleTexture, new Vector2(508, 42), Color.White);
+
+            // Future version item slots
+            //if (ScreenManager.Player.hasXXX)
+            //    spriteBatch.Draw(ScreenManager.HUDXXX, new Vector2(488, 45), Color.White);
+
+            //if (ScreenManager.Player.hasXXX)
+            //    spriteBatch.Draw(ScreenManager.HUDXXX, new Vector2(509, 21), Color.White);
+
 
             //  Draw map
-            if(level.Player.hasMap)
-                spriteBatch.Draw(ScreenManager.HUDOpenMapTexture, new Vector2(465, 10), Color.White);
+            if (ScreenManager.Player.hasMap)
+                spriteBatch.Draw(ScreenManager.HUDOpenMapTexture, new Vector2(530, 10), Color.White);
             else
-                spriteBatch.Draw(ScreenManager.HUDClosedMapTexture, new Vector2(480, 10), Color.White);
+                spriteBatch.Draw(ScreenManager.HUDClosedMapTexture, new Vector2(530, 10), Color.White);
+
+            // Draw remaining Health
+            healthHUD.State = ScreenManager.Player.CurrentHealth;
+            healthHUD.Draw(gameTime, spriteBatch);
+
 
 
             if (level.CoinsRemaining > 0)
@@ -457,9 +488,9 @@ namespace CastleX
             //if (level.ReachedExit)
             //     status = winOverlay;
             //else 
-            if (!level.Player.IsAlive)
+            if (!ScreenManager.Player.IsAlive)
             {
-                if (level.Player.Lives <= 0)
+                if (ScreenManager.Player.Lives <= 0)
                     status = loseOverlay;
                 else
                     status = diedOverlay;
@@ -472,15 +503,7 @@ namespace CastleX
                 spriteBatch.Draw(status, center - statusSize / 2, Color.White);
             }
 
-            Vector2 HealthPosition = new Vector2(10, 60);
-            int offset = 0;
-            for (int i = 1; i <= level.Player.CurrentHealth; ++i)
-            {
-                spriteBatch.Draw(ScreenManager.HeartIconTexture, HealthPosition, Color.White);
-                HealthPosition.X += 20;
-                offset = i;
-            }
-            HealthPosition.X -= offset * 20; 
+
 
             //spriteBatch.End();
         }

@@ -8,7 +8,7 @@ namespace CastleX
     /// <summary>
     /// A valuable item the player can collect.
     /// </summary>
-    class FallingTile
+    public class FallingTile
     {
         private Texture2D texture;
         private Vector2 origin;

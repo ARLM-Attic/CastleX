@@ -8,7 +8,7 @@ namespace CastleX
     /// <summary>
     /// The Entrance point.
     /// </summary>
-    class Entrance
+    public class Entrance
     {
         private int entranceNumber;
         public int EntranceNumber

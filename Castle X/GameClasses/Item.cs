@@ -6,11 +6,10 @@ using System.Diagnostics;
 
 namespace CastleX
 {
-    enum ItemType
+    public enum ItemType
     {
         Coin = 1,
         Powerup = 2,
-        Heart = 3,
         Life = 4,
         Oxygen = 5,
         Trunk = 6,
@@ -18,14 +17,15 @@ namespace CastleX
         BlueKey = 8,
         RedKey = 9,
         GreenKey = 10,
-        Map = 11
+        Map = 11,
+        MagicMirror = 12
     }
 
     
     /// <summary>
     /// A valuable item the player can collect.
     /// </summary>
-    class Item
+    public class Item
     {
         ScreenManager screenManager;
 
@@ -102,66 +102,48 @@ namespace CastleX
             origin = new Vector2(width / 2.0f, height / 2.0f);
 
             collectedSound = level.screenManager.CoinCollectedSound;
+            Color = Color.White;  // most items don't use a tint color
+            isBouncing = true;    // most items do bounce
 
             switch (ItemType)
             {
                 case ItemType.Trunk:
-                    texture = screenManager.Checkpoint1Texture;
-                    Color = Color.White;
+                    texture = screenManager.TrunkTexture;
                     isBouncing = false;
                     break;
                 case ItemType.Coin:
                     PointValue = 30;
                     texture = screenManager.CoinTexture;
                     Color = Color.Yellow;
-                    isBouncing = true;
                     break;
                 case ItemType.Powerup:
                     PointValue = 100;
                     texture = screenManager.CoinTexture;
                     Color = Color.Red;
-                    isBouncing = true;
                     break;
-                case ItemType.Heart:
-                    texture = screenManager.HeartIconTexture;
-                    Color = Color.White;
-                    isBouncing = true;
-                    break;
-
                 case ItemType.Life:
                     texture = screenManager.LifeTexture;
-                    Color = Color.White;
-                    isBouncing = true;
                     break;
                 case ItemType.Oxygen:
-                    texture = screenManager.TimeClockTexture;
-                    Color = Color.White;
-                    isBouncing = true;
+                    texture = screenManager.OxygenTexture;
                     break;
                 case ItemType.BlueKey:
                     texture = screenManager.BlueKeyTexture;
-                    Color = Color.White;
-                    isBouncing = true;
                     break;
                 case ItemType.YellowKey:
                     texture = screenManager.YellowKeyTexture;
-                    Color = Color.White;
-                    isBouncing = true;
                     break;
                 case ItemType.RedKey:
                     texture = screenManager.RedKeyTexture;
-                    Color = Color.White;
-                    isBouncing = true;
                     break;
                 case ItemType.GreenKey:
                     texture = screenManager.GreenKeyTexture;
-                    Color = Color.White;
-                    isBouncing = true;
                     break;
                 case ItemType.Map:
                     texture = screenManager.MapTexture;
-                    Color = Color.White;
-                    isBouncing = true;
+                    break;
+                case ItemType.MagicMirror:
+                    texture = screenManager.MagicMirrorTexture;
                     break;
             }
         }
@@ -213,7 +195,7 @@ namespace CastleX
                             if (item.ischeckpointcurrent)
                             {
                                 item.ischeckpointcurrent = false;
-                                item.texture = screenManager.Checkpoint1Texture;
+                                item.texture = screenManager.TrunkTexture;
                             }
                         }
                         checkpointnumber++;
@@ -230,7 +212,7 @@ namespace CastleX
 
                 case ItemType.Coin:
                     level.items.RemoveAt(itemnumber--);
-                    level.Score += this.PointValue;
+                    collectedBy.Score += this.PointValue;
                     level.CoinsRemaining -= 1;
                     PlaySound();
                     break;
@@ -246,14 +228,9 @@ namespace CastleX
                     collectedBy.Lives += 1;
                     PlaySound();
                     break;
-                case ItemType.Heart:
-                    level.items.RemoveAt(itemnumber--);
-                    collectedBy.CurrentHealth += 1;
-                    PlaySound();
-                    break;
                 case ItemType.Oxygen:
                     level.items.RemoveAt(itemnumber--);
-           //         level.TimeRemaining += TimeSpan.FromSeconds(30);
+                    collectedBy.hasOxygen = true;
                     PlaySound();
                     break;
                 case ItemType.YellowKey:
@@ -281,7 +258,11 @@ namespace CastleX
                     collectedBy.hasMap = true;
                     PlaySound();
                     break;
-
+                case ItemType.MagicMirror:
+                    level.items.RemoveAt(itemnumber--);
+                    level.onMagicMirrorPlayerCloned();
+                    PlaySound();
+                    break;
             }
         }
 

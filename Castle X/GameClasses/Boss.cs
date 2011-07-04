@@ -12,7 +12,7 @@ namespace CastleX
     /// <summary>
     ///  A Boss who moves, jumps, etc.
     /// </summary>
-    class Boss
+    public class Boss
     {
         // Animations
         private Animation idleAnimation;
@@ -314,7 +314,7 @@ namespace CastleX
                     {
                         if (BoundingRectangle.Intersects(exit.BoundingRectangle))
                         {
-                            level.Player.Kill();
+                            screenManager.Player.Kill();
                         }
                     }
                 }

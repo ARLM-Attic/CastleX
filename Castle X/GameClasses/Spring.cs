@@ -9,7 +9,7 @@ namespace CastleX
     /// <summary>
     /// A Spring
     /// </summary>
-    class Spring
+    public class Spring
     {
         ScreenManager screenManager;
         private AnimationPlayer sprite;
@@ -34,7 +34,7 @@ namespace CastleX
         }
 
         /// <summary>   
-        /// Gets whether or not the player's feet are on the MovableTile.   
+        /// Gets whether or not the player's feet are on Spring  
         /// </summary>   
         public bool PlayerIsOn { get; set; }   
 

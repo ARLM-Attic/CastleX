@@ -59,9 +59,6 @@ namespace CastleX
         public bool IsRotated { get { return isRotated; } set { isRotated = value; } }
         public bool isRunningSlow { get; set; }
         #endregion
-        public ContentManager Content { get; set; }
-        public ContentManager GraphicContent { get; set; }
-        public InputState Input { get; set; }
         #region int
         public int FPS { get; internal set; }
         public int LevelIndex { get; set; }
@@ -71,6 +68,20 @@ namespace CastleX
         public int NumberOfLevels { get; set; }
         public const float HUDHeight = 80;
         #endregion
+
+        /// <summary>
+        /// A single player is shared through all levels
+        /// </summary>
+        public Player Player
+        {
+            get { return player; }
+            set { player = value; }
+        }
+        private Player player = null;
+
+        public ContentManager Content { get; set; }
+        public ContentManager GraphicContent { get; set; }
+        public InputState Input { get; set; }
         public PESettings Settings { get; set; }
         public CastleXGame FrontGamePage { get; set; }
         public SkinSettings SkinSettings { get; set; }
@@ -118,11 +129,17 @@ namespace CastleX
         public SpriteFont Segoe12 { get; set; }
         #endregion
         public StorageDevice Device { get; set; }
+
+        #region debug and helper textures
+        public Texture2D BlankTexture { get; set; }
+        public Texture2D CrossHairTexture { get; set; }
+        public Texture2D SpacerTexture { get; set; }
+
+        #endregion
+
         #region Texture2D
         public Texture2D ArrowTexture { get; set; }
         public Texture2D FallingTileTexture { get; set; }
-        public Texture2D BlankTexture { get; set; }
-        public Texture2D SpacerTexture { get; set; }
         public Texture2D HUDTexture { get; set; }
         public Texture2D BannerTexture { get; set; }
         public Texture2D[] BlockATexture { get; set; }
@@ -130,7 +147,7 @@ namespace CastleX
         public Texture2D MoveablePlatformTexture { get; set; }         // Moveable tiles
         public Texture2D SpringTexture { get; set; }
         public Texture2D StoppedSpringTexture { get; set; }
-        public Texture2D Checkpoint1Texture { get; set; }
+        public Texture2D TrunkTexture { get; set; }
         public Texture2D Checkpoint2Texture { get; set; }
         public Texture2D DefaultBGTexture { get; set; }
         public Texture2D ExitTexture { get; set; }
@@ -138,18 +155,21 @@ namespace CastleX
         public Texture2D GreenKeyTexture { get; set; }
         public Texture2D BlueKeyTexture { get; set; }
         public Texture2D RedKeyTexture { get; set; }
-        public Texture2D HUDOpenMapTexture { get; set; }        
+        public Texture2D HUDOxygenTexture { get; set; }
+        public Texture2D HUDCandleTexture { get; set; }
+        public Texture2D HUDOpenMapTexture { get; set; }
         public Texture2D HUDClosedMapTexture { get; set; }        
         public Texture2D MapTexture { get; set; }
         public Texture2D CoinTexture { get; set; }
         public Texture2D GradientTexture { get; set; }
-        public Texture2D HeartIconTexture { get; set; }
+        public Texture2D HealthPotionTexture { get; set; }
         public Texture2D LadderTexture { get; set; }
         public Texture2D RopeTexture { get; set; }
         public Texture2D WoodBlockTexture { get; set; }
         public Texture2D LifeTexture { get; set; }
         public Texture2D PlatformTexture { get; set; }
-        public Texture2D TimeClockTexture { get; set; }
+        public Texture2D OxygenTexture { get; set; }
+        public Texture2D MagicMirrorTexture { get; set; }
         // Terrain Tiles
         public Texture2D[] ClayTerrain { get; set; }
         public Texture2D[] ClaySurface { get; set; }
@@ -179,6 +199,7 @@ namespace CastleX
         // Animated items
         public Texture2D Torch { get; set; }
         public Texture2D WaterSurface { get; set; }
+        public Texture2D UpsideDownSpell { get; set; }
         public Texture2D Candle { get; set; }
         // Brackground tiles
         public Texture2D Water { get; set; }
@@ -265,6 +286,7 @@ namespace CastleX
             HudMedium = GraphicContent.Load<SpriteFont>(@"Fonts\HudMedium");
             HudSmall = GraphicContent.Load<SpriteFont>(@"Fonts\HudSmall");
             BlankTexture = Content.Load<Texture2D>(@"blank");
+            CrossHairTexture = Content.Load<Texture2D>(@"crosshair");
             HUDTexture = Content.Load<Texture2D>(@"HUD");
             BannerTexture = Content.Load<Texture2D>(@"Banner");
             SpacerTexture = Content.Load<Texture2D>(@"spacer");
@@ -612,16 +634,20 @@ namespace CastleX
                 {
                     WaterSurface = GraphicContent.Load<Texture2D>("Skins/" + Settings.Skin + "/Sprites/Animated/WaterSurface");
                     Water = GraphicContent.Load<Texture2D>("Skins/" + Settings.Skin + "/Sprites/Water");
+                    UpsideDownSpell = GraphicContent.Load<Texture2D>("Skins/" + Settings.Skin + "/Sprites/UpsideDownSpell3");
                 }
                 else
                 {
                     WaterSurface = GraphicContent.Load<Texture2D>("Skins/0/Sprites/Animated/WaterSurface");
                     Water = GraphicContent.Load<Texture2D>("Skins/0/Sprites/Water");
+                    UpsideDownSpell = GraphicContent.Load<Texture2D>("Skins/0/Sprites/UpsideDownSpell3");
                 }
             }
             catch
             {
                 WaterSurface = GraphicContent.Load<Texture2D>("Skins/0/Sprites/Animated/WaterSurface");
+                Water = GraphicContent.Load<Texture2D>("Skins/0/Sprites/Water");
+                UpsideDownSpell = GraphicContent.Load<Texture2D>("Skins/0/Sprites/UpsideDownSpell3");
             }
             #endregion
 
@@ -714,34 +740,40 @@ namespace CastleX
                     FallingTileTexture = GraphicContent.Load<Texture2D>("Skins/" + Settings.Skin + "/Sprites/FallingTile");
                     ArrowTexture = GraphicContent.Load<Texture2D>("Skins/" + Settings.Skin + "/Sprites/Arrow");
                     CoinTexture = GraphicContent.Load<Texture2D>("Skins/" + Settings.Skin + "/Sprites/Coin");
-                    HeartIconTexture = GraphicContent.Load<Texture2D>("Skins/" + Settings.Skin + "/Sprites/Heart");
+                    HealthPotionTexture = GraphicContent.Load<Texture2D>("Skins/" + Settings.Skin + "/Sprites/MultipleState/HealthPotion");
                     LifeTexture = GraphicContent.Load<Texture2D>("Skins/" + Settings.Skin + "/Sprites/Life");
-                    TimeClockTexture = GraphicContent.Load<Texture2D>("Skins/" + Settings.Skin + "/Sprites/Timer");
                     YellowKeyTexture = GraphicContent.Load<Texture2D>("Skins/" + Settings.Skin + "/Sprites/Key_Yellow");
                     GreenKeyTexture = GraphicContent.Load<Texture2D>("Skins/" + Settings.Skin + "/Sprites/Key_Green");
                     BlueKeyTexture = GraphicContent.Load<Texture2D>("Skins/" + Settings.Skin + "/Sprites/Key_Blue");
                     RedKeyTexture = GraphicContent.Load<Texture2D>("Skins/" + Settings.Skin + "/Sprites/Key_Red");
                     HUDOpenMapTexture = GraphicContent.Load<Texture2D>("Skins/" + Settings.Skin + "/Sprites/HUDOpenMap");
                     HUDClosedMapTexture = GraphicContent.Load<Texture2D>("Skins/" + Settings.Skin + "/Sprites/HUDClosedMap");
+                    HUDOxygenTexture = GraphicContent.Load<Texture2D>("Skins/" + Settings.Skin + "/Sprites/HUDOxygen");
+                    HUDCandleTexture = GraphicContent.Load<Texture2D>("Skins/" + Settings.Skin + "/Sprites/HUDCandle");                    
                     MapTexture = GraphicContent.Load<Texture2D>("Skins/" + Settings.Skin + "/Sprites/Map");
                     Brick = GraphicContent.Load<Texture2D>("Skins/" + Settings.Skin + "/Sprites/Brick");
+                    OxygenTexture = GraphicContent.Load<Texture2D>("Skins/" + Settings.Skin + "/Sprites/Oxygen");
+                    MagicMirrorTexture = GraphicContent.Load<Texture2D>("Skins/" + Settings.Skin + "/Sprites/MagicMirror");
                 }
                 else
                 {
                     ArrowTexture = GraphicContent.Load<Texture2D>("Skins/0/Sprites/Arrow");
                     FallingTileTexture = GraphicContent.Load<Texture2D>("Skins/0/Sprites/FallingTile");
                     CoinTexture = GraphicContent.Load<Texture2D>("Skins/0/Sprites/Coin");
-                    HeartIconTexture = GraphicContent.Load<Texture2D>("Skins/0/Sprites/Heart");
+                    HealthPotionTexture = GraphicContent.Load<Texture2D>("Skins/0/Sprites/MultipleState/HealthPotion");
                     LifeTexture = GraphicContent.Load<Texture2D>("Skins/0/Sprites/Life");
-                    TimeClockTexture = GraphicContent.Load<Texture2D>("Skins/0/Sprites/Timer");
                     YellowKeyTexture = GraphicContent.Load<Texture2D>("Skins/0/Sprites/Key_Yellow");
                     GreenKeyTexture = GraphicContent.Load<Texture2D>("Skins/0/Sprites/Key_Green");
                     BlueKeyTexture = GraphicContent.Load<Texture2D>("Skins/0/Sprites/Key_Blue");
                     RedKeyTexture = GraphicContent.Load<Texture2D>("Skins/0/Sprites/Key_Red");
                     HUDOpenMapTexture = GraphicContent.Load<Texture2D>("Skins/0/Sprites/HUDOpenMap");
                     HUDClosedMapTexture = GraphicContent.Load<Texture2D>("Skins/0/Sprites/HUDClosedMap");
+                    HUDOxygenTexture = GraphicContent.Load<Texture2D>("Skins/0/Sprites/HUDOxygen");
+                    HUDCandleTexture = GraphicContent.Load<Texture2D>("Skins/0/Sprites/HUDCandle");
                     MapTexture = GraphicContent.Load<Texture2D>("Skins/0/Sprites/Map");
                     Brick = GraphicContent.Load<Texture2D>("Skins/0/Sprites/Brick");
+                    OxygenTexture = GraphicContent.Load<Texture2D>("Skins/0/Sprites/Oxygen");
+                    MagicMirrorTexture = GraphicContent.Load<Texture2D>("Skins/0/Sprites/MagicMirror");
                 }
             }
             catch
@@ -749,17 +781,20 @@ namespace CastleX
                 ArrowTexture = GraphicContent.Load<Texture2D>("Skins/0/Sprites/Arrow");
                 FallingTileTexture = GraphicContent.Load<Texture2D>("Skins/0/Sprites/FallingTile");
                 CoinTexture = GraphicContent.Load<Texture2D>("Skins/0/Sprites/Coin");
-                HeartIconTexture = GraphicContent.Load<Texture2D>("Skins/0/Sprites/Heart");
+                HealthPotionTexture = GraphicContent.Load<Texture2D>("Skins/0/Sprites/MultipleState/HealthPotion");
                 LifeTexture = GraphicContent.Load<Texture2D>("Skins/0/Sprites/Life");
-                TimeClockTexture = GraphicContent.Load<Texture2D>("Skins/0/Sprites/Timer");
                 YellowKeyTexture = GraphicContent.Load<Texture2D>("Skins/0/Sprites/Key_Yellow");
                 GreenKeyTexture = GraphicContent.Load<Texture2D>("Skins/0/Sprites/Key_Green");
                 BlueKeyTexture = GraphicContent.Load<Texture2D>("Skins/0/Sprites/Key_Blue");
                 RedKeyTexture = GraphicContent.Load<Texture2D>("Skins/0/Sprites/Key_Red");
                 HUDOpenMapTexture = GraphicContent.Load<Texture2D>("Skins/0/Sprites/HUDOpenMap");
                 HUDClosedMapTexture = GraphicContent.Load<Texture2D>("Skins/0/Sprites/HUDClosedMap");
+                HUDOxygenTexture = GraphicContent.Load<Texture2D>("Skins/0/Sprites/HUDOxygen");
+                HUDCandleTexture = GraphicContent.Load<Texture2D>("Skins/0/Sprites/HUDCandle");
                 MapTexture = GraphicContent.Load<Texture2D>("Skins/0/Sprites/Map");
                 Brick = GraphicContent.Load<Texture2D>("Skins/0/Sprites/Brick");
+                OxygenTexture = GraphicContent.Load<Texture2D>("Skins/0/Sprites/Oxygen");
+                MagicMirrorTexture = GraphicContent.Load<Texture2D>("Skins/0/Sprites/MagicMirror");
             }
             #endregion
             #endregion
@@ -942,7 +977,7 @@ namespace CastleX
             {
                 if (SkinSettings.hasTiles)
                 {
-                    Checkpoint1Texture = GraphicContent.Load<Texture2D>("Skins/" + Settings.Skin + "/Tiles/Checkpoint1");
+                    TrunkTexture = GraphicContent.Load<Texture2D>("Skins/" + Settings.Skin + "/Tiles/Checkpoint1");
                     Checkpoint2Texture = GraphicContent.Load<Texture2D>("Skins/" + Settings.Skin + "/Tiles/Checkpoint2");
                     LadderTexture = GraphicContent.Load<Texture2D>("Skins/" + Settings.Skin + "/Tiles/Ladder");
                     RopeTexture = GraphicContent.Load<Texture2D>("Skins/" + Settings.Skin + "/Tiles/Rope");
@@ -950,7 +985,7 @@ namespace CastleX
                 }
                 else
                 {
-                    Checkpoint1Texture = GraphicContent.Load<Texture2D>("Skins/0/Tiles/Checkpoint1");
+                    TrunkTexture = GraphicContent.Load<Texture2D>("Skins/0/Tiles/Checkpoint1");
                     Checkpoint2Texture = GraphicContent.Load<Texture2D>("Skins/0/Tiles/Checkpoint2");
                     LadderTexture = GraphicContent.Load<Texture2D>("Skins/0/Tiles/Ladder");
                     RopeTexture = GraphicContent.Load<Texture2D>("Skins/0/Tiles/Rope");
@@ -959,7 +994,7 @@ namespace CastleX
             }
             catch
             {
-                Checkpoint1Texture = GraphicContent.Load<Texture2D>("Skins/0/Tiles/Checkpoint1");
+                TrunkTexture = GraphicContent.Load<Texture2D>("Skins/0/Tiles/Checkpoint1");
                 Checkpoint2Texture = GraphicContent.Load<Texture2D>("Skins/0/Tiles/Checkpoint2");
                 LadderTexture = GraphicContent.Load<Texture2D>("Skins/0/Tiles/Ladder");
                 RopeTexture = GraphicContent.Load<Texture2D>("Skins/0/Tiles/Rope");
@@ -1247,6 +1282,7 @@ namespace CastleX
             HudMedium = GraphicContent.Load<SpriteFont>(@"Fonts\HudMedium");
             HudSmall = GraphicContent.Load<SpriteFont>(@"Fonts\HudSmall");
             BlankTexture = Content.Load<Texture2D>(@"blank");
+            CrossHairTexture = Content.Load<Texture2D>(@"crosshair");
             HUDTexture = Content.Load<Texture2D>(@"HUD");
             BannerTexture = Content.Load<Texture2D>(@"Banner");
             loadGameContent();
