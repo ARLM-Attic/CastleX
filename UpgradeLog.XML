@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?><?xml-stylesheet type='text/xsl' href='_UpgradeReport_Files/UpgradeReport.xslt'?><UpgradeLog>
+<Properties><Property Name="Solution" Value="Castle X">
+</Property><Property Name="Solution File" Value="D:\CastleX\Castle X.sln">
+</Property><Property Name="Date" Value="17 August 2011">
+</Property><Property Name="Time" Value="11:12">
+</Property></Properties><Event ErrorLevel="0" Project="Castle X" Source="Castle X\Castle X.csproj" Description="Upgraded XNA Game Studio project to XNA Framework 4.0.">
+</Event><Event ErrorLevel="0" Project="Castle X" Source="Castle X\Castle X.csproj" Description="Project converted successfully">
+</Event><Event ErrorLevel="3" Project="Castle X" Source="Castle X\Castle X.csproj" Description="Converted">
+</Event><Event ErrorLevel="0" Project="" Source="Castle X.sln" Description="Solution converted successfully">
+</Event><Event ErrorLevel="3" Project="" Source="Castle X.sln" Description="Converted">
+</Event><Event ErrorLevel="0" Project="Castle X" Source="Castle X\Castle X.csproj" Description="Scan complete: Upgrade not required for project files.">
+</Event><Event ErrorLevel="0" Project="Castle X" Source="Castle X\Castle X.csproj" Description="Upgraded XNA Framework references to XNA Framework 4.0.">
+</Event></UpgradeLog>

@@ -96,7 +96,9 @@ namespace CastleX
         {
             sprite.Draw(gameTime, spriteBatch, Position, SpriteEffects.None);
             if (screenManager.Settings.DebugMode) //  Show bounding box if debugging
-                spriteBatch.Draw(screenManager.BlankTexture, this.BoundingRectangle, new Color (Color.Red, .5f));
+            {
+                spriteBatch.Draw(screenManager.BlankTexture, this.BoundingRectangle, new Color(1,0,0,0.5f));
+            }
         }
     }
 }

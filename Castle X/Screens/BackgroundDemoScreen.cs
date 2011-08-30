@@ -118,8 +118,7 @@ namespace CastleX
             // Loop here so we can try again when we can't find a level.
             while (true)
             {
-                levelPath = String.Format("demoscreen.txt", ++levelIndex);
-                levelPath = Path.Combine(StorageContainer.TitleLocation, "GameContent/" + levelPath);
+                levelPath = "GameContent/demoscreen.txt";
 
                 if (File.Exists(levelPath))
                     break;
@@ -138,7 +137,8 @@ namespace CastleX
 
             // Load the level.
 
-            level = new Level(ScreenManager.Game.Services, levelPath, levelIndex, 1, ScreenManager);
+            using (Stream level_stream = TitleContainer.OpenStream(levelPath))
+                level = new Level(ScreenManager.Game.Services, level_stream, levelIndex, 1, ScreenManager);
 
         }
 

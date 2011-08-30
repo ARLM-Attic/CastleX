@@ -277,7 +277,7 @@ namespace CastleX
 
             // Load content belonging to the screen manager.
             Content = Game.Content;
-            GraphicContent = new ContentManager(Game.Services);
+            //GraphicContent = new ContentManager(Game.Services);
             GraphicContent = Game.Content;
             SpriteBatch = new SpriteBatch(GraphicsDevice);
             HudFont = GraphicContent.Load<SpriteFont>(@"Fonts\Hud");
@@ -1106,159 +1106,162 @@ namespace CastleX
             String line;
             List<String> myLineVariable = new List<String>();
             string myNewLineVariable = "";
-            StreamReader reader = null;
-            try
+            using (Stream file_stream = TitleContainer.OpenStream("GameContent\\Skins\\" + Settings.Skin + "\\SkinMetadata.txt"))
             {
-                reader = new StreamReader(Path.Combine(StorageContainer.TitleLocation, "GameContent\\Skins\\" + Settings.Skin + "\\SkinMetadata.txt"));
-            }
-            catch
-            {
-                resetSkinNumber();
-                reader = new StreamReader(Path.Combine(StorageContainer.TitleLocation, "GameContent\\Skins\\" + Settings.Skin + "\\SkinMetadata.txt"));
-            }
-
-            while ((line = reader.ReadLine()) != null)
-            {
-                #region Retrieve skins title
-                if (line.StartsWith("@tit."))
+                StreamReader reader = null;
+                try
                 {
-                    SkinSettings.skinTitle = line.Remove(0, 5).ToString();
+                    reader = new StreamReader(file_stream);
                 }
-                #endregion
-                if (!loadonlyheader)
+                catch
                 {
-                    #region Gather True False settings for what all is stored
-                    if (line.StartsWith("@backgrounds.1"))
-                        SkinSettings.hasBackgrounds = true;
-                    else
-                        if (line.StartsWith("@backgrounds.0"))
-                        {
-                            SkinSettings.hasBackgrounds = false;
-                        }
-                    if (line.StartsWith("@overlays.1"))
-                        SkinSettings.hasOverlays = true;
-                    else
-                        if (line.StartsWith("@overlays.0"))
-                        {
-                            SkinSettings.hasOverlays = false;
-                        }
-                    if (line.StartsWith("@sprites.1"))
-                        SkinSettings.hasSprites = true;
-                    else
-                        if (line.StartsWith("@sprites.0"))
-                        {
-                            SkinSettings.hasSprites = false;
-                        }
-                    if (line.StartsWith("@tiles.1"))
-                        SkinSettings.hasTiles = true;
-                    else
-                        if (line.StartsWith("@tiles.0"))
-                        {
-                            SkinSettings.hasTiles = false;
-                        }
-                    if (line.StartsWith("@sounds.1"))
-                        SkinSettings.hasSounds = true;
-                    else
-                        if (line.StartsWith("@sounds.0"))
-                        {
-                            SkinSettings.hasSounds = false;
-                        }
-                    if (line.StartsWith("@music.1"))
-                        SkinSettings.hasMusic = true;
-                    else
-                        if (line.StartsWith("@music.0"))
-                        {
-                            SkinSettings.hasMusic = false;
-                        }
-                    #endregion
-
-                    #region Gather Number settings for each animatons frame width
-                    #region Players animation frame widths
-                    if (line.StartsWith("@P_Celeb."))
-                    {
-                        SkinSettings.FrameWidth_Player_Celebrate = Int32.Parse(line.Remove(0, 9).ToString());
-                    }
-                    if (line.StartsWith("@P_Die."))
-                    {
-                        SkinSettings.FrameWidth_Player_Die = Int16.Parse(line.Remove(0, 7).ToString());
-                    }
-                    if (line.StartsWith("@P_Idle."))
-                    {
-                        SkinSettings.FrameWidth_Player_Idle = Int16.Parse(line.Remove(0, 8).ToString());
-                    }
-                    if (line.StartsWith("@P_Jump."))
-                    {
-                        SkinSettings.FrameWidth_Player_Jump = Int16.Parse(line.Remove(0, 8).ToString());
-                    }
-                    if (line.StartsWith("@P_Run."))
-                    {
-                        SkinSettings.FrameWidth_Player_Run = Int16.Parse(line.Remove(0, 7).ToString());
-                    }
-                    #endregion
-                    #region enemies animation frame widths
-                    #region Monsters
-                    for (int i = 0; i < numMonsters; i++)
-                    {
-                        if (line.StartsWith("@M" + (i + 1).ToString() + "_Die."))
-                        {
-                            SkinSettings.FrameWidth_Monster_Die[i] = Int16.Parse(line.Remove(0, 8).ToString());
-                        }
-                        if (line.StartsWith("@M" + (i + 1).ToString() + "_Idle."))
-                        {
-                            SkinSettings.FrameWidth_Monster_Idle[i] = Int16.Parse(line.Remove(0, 9).ToString());
-                        }
-                        if (line.StartsWith("@M" + (i + 1).ToString() + "_Run."))
-                        {
-                            SkinSettings.FrameWidth_Monster_Run[i] = Int16.Parse(line.Remove(0, 8).ToString());
-                        }
-                    }
-                    #endregion                    
-
-                    #region Ghosts
-                    for (int i = 0; i < numGhosts; i++)
-                    {
-                        if (line.StartsWith("@G" + (i + 1).ToString() + "_Die."))
-                        {
-                            SkinSettings.FrameWidth_Ghost_Die[i] = Int16.Parse(line.Remove(0, 8).ToString());
-                        }
-                        if (line.StartsWith("@G" + (i + 1).ToString() + "_Idle."))
-                        {
-                            SkinSettings.FrameWidth_Ghost_Idle[i] = Int16.Parse(line.Remove(0, 9).ToString());
-                        }
-                        if (line.StartsWith("@G" + (i + 1).ToString() + "_Run."))
-                        {
-                            SkinSettings.FrameWidth_Ghost_Run[i] = Int16.Parse(line.Remove(0, 8).ToString());
-                        }
-                    }
-                    #endregion    
-
-                    #region Flying enemies
-                    for (int i = 0; i < numFlying; i++)
-                    {
-                        if (line.StartsWith("@F" + (i + 1).ToString() + "_Die."))
-                        {
-                            SkinSettings.FrameWidth_Flying_Die[i] = Int16.Parse(line.Remove(0, 8).ToString());
-                        }
-                        if (line.StartsWith("@F" + (i + 1).ToString() + "_Idle."))
-                        {
-                            SkinSettings.FrameWidth_Flying_Idle[i] = Int16.Parse(line.Remove(0, 9).ToString());
-                        }
-                        if (line.StartsWith("@F" + (i + 1).ToString() + "_Run."))
-                        {
-                            SkinSettings.FrameWidth_Flying_Run[i] = Int16.Parse(line.Remove(0, 8).ToString());
-                        }
-                    }
-                    #endregion    
-
-                    #endregion
-                    #endregion
+                    resetSkinNumber();
+                    reader = new StreamReader(file_stream);
                 }
-                myNewLineVariable += line + "\n";
-            }
-            if (reader != null)
-            {
-                reader.Close();
-                reader.Dispose();
+
+                while ((line = reader.ReadLine()) != null)
+                {
+                    #region Retrieve skins title
+                    if (line.StartsWith("@tit."))
+                    {
+                        SkinSettings.skinTitle = line.Remove(0, 5).ToString();
+                    }
+                    #endregion
+                    if (!loadonlyheader)
+                    {
+                        #region Gather True False settings for what all is stored
+                        if (line.StartsWith("@backgrounds.1"))
+                            SkinSettings.hasBackgrounds = true;
+                        else
+                            if (line.StartsWith("@backgrounds.0"))
+                            {
+                                SkinSettings.hasBackgrounds = false;
+                            }
+                        if (line.StartsWith("@overlays.1"))
+                            SkinSettings.hasOverlays = true;
+                        else
+                            if (line.StartsWith("@overlays.0"))
+                            {
+                                SkinSettings.hasOverlays = false;
+                            }
+                        if (line.StartsWith("@sprites.1"))
+                            SkinSettings.hasSprites = true;
+                        else
+                            if (line.StartsWith("@sprites.0"))
+                            {
+                                SkinSettings.hasSprites = false;
+                            }
+                        if (line.StartsWith("@tiles.1"))
+                            SkinSettings.hasTiles = true;
+                        else
+                            if (line.StartsWith("@tiles.0"))
+                            {
+                                SkinSettings.hasTiles = false;
+                            }
+                        if (line.StartsWith("@sounds.1"))
+                            SkinSettings.hasSounds = true;
+                        else
+                            if (line.StartsWith("@sounds.0"))
+                            {
+                                SkinSettings.hasSounds = false;
+                            }
+                        if (line.StartsWith("@music.1"))
+                            SkinSettings.hasMusic = true;
+                        else
+                            if (line.StartsWith("@music.0"))
+                            {
+                                SkinSettings.hasMusic = false;
+                            }
+                        #endregion
+
+                        #region Gather Number settings for each animatons frame width
+                        #region Players animation frame widths
+                        if (line.StartsWith("@P_Celeb."))
+                        {
+                            SkinSettings.FrameWidth_Player_Celebrate = Int32.Parse(line.Remove(0, 9).ToString());
+                        }
+                        if (line.StartsWith("@P_Die."))
+                        {
+                            SkinSettings.FrameWidth_Player_Die = Int16.Parse(line.Remove(0, 7).ToString());
+                        }
+                        if (line.StartsWith("@P_Idle."))
+                        {
+                            SkinSettings.FrameWidth_Player_Idle = Int16.Parse(line.Remove(0, 8).ToString());
+                        }
+                        if (line.StartsWith("@P_Jump."))
+                        {
+                            SkinSettings.FrameWidth_Player_Jump = Int16.Parse(line.Remove(0, 8).ToString());
+                        }
+                        if (line.StartsWith("@P_Run."))
+                        {
+                            SkinSettings.FrameWidth_Player_Run = Int16.Parse(line.Remove(0, 7).ToString());
+                        }
+                        #endregion
+                        #region enemies animation frame widths
+                        #region Monsters
+                        for (int i = 0; i < numMonsters; i++)
+                        {
+                            if (line.StartsWith("@M" + (i + 1).ToString() + "_Die."))
+                            {
+                                SkinSettings.FrameWidth_Monster_Die[i] = Int16.Parse(line.Remove(0, 8).ToString());
+                            }
+                            if (line.StartsWith("@M" + (i + 1).ToString() + "_Idle."))
+                            {
+                                SkinSettings.FrameWidth_Monster_Idle[i] = Int16.Parse(line.Remove(0, 9).ToString());
+                            }
+                            if (line.StartsWith("@M" + (i + 1).ToString() + "_Run."))
+                            {
+                                SkinSettings.FrameWidth_Monster_Run[i] = Int16.Parse(line.Remove(0, 8).ToString());
+                            }
+                        }
+                        #endregion
+
+                        #region Ghosts
+                        for (int i = 0; i < numGhosts; i++)
+                        {
+                            if (line.StartsWith("@G" + (i + 1).ToString() + "_Die."))
+                            {
+                                SkinSettings.FrameWidth_Ghost_Die[i] = Int16.Parse(line.Remove(0, 8).ToString());
+                            }
+                            if (line.StartsWith("@G" + (i + 1).ToString() + "_Idle."))
+                            {
+                                SkinSettings.FrameWidth_Ghost_Idle[i] = Int16.Parse(line.Remove(0, 9).ToString());
+                            }
+                            if (line.StartsWith("@G" + (i + 1).ToString() + "_Run."))
+                            {
+                                SkinSettings.FrameWidth_Ghost_Run[i] = Int16.Parse(line.Remove(0, 8).ToString());
+                            }
+                        }
+                        #endregion
+
+                        #region Flying enemies
+                        for (int i = 0; i < numFlying; i++)
+                        {
+                            if (line.StartsWith("@F" + (i + 1).ToString() + "_Die."))
+                            {
+                                SkinSettings.FrameWidth_Flying_Die[i] = Int16.Parse(line.Remove(0, 8).ToString());
+                            }
+                            if (line.StartsWith("@F" + (i + 1).ToString() + "_Idle."))
+                            {
+                                SkinSettings.FrameWidth_Flying_Idle[i] = Int16.Parse(line.Remove(0, 9).ToString());
+                            }
+                            if (line.StartsWith("@F" + (i + 1).ToString() + "_Run."))
+                            {
+                                SkinSettings.FrameWidth_Flying_Run[i] = Int16.Parse(line.Remove(0, 8).ToString());
+                            }
+                        }
+                        #endregion
+
+                        #endregion
+                        #endregion
+                    }
+                    myNewLineVariable += line + "\n";
+                }
+                if (reader != null)
+                {
+                    reader.Close();
+                    reader.Dispose();
+                }
             }
         }
 
@@ -1418,15 +1421,20 @@ namespace CastleX
             Device = null;
             stateobj = (Object)"GetDevice for Player One";
             //Guide.BeginShowStorageDeviceSelector(PlayerIndex.One, this.GetDeviceAsync, stateobj);
-            Guide.BeginShowStorageDeviceSelector(this.GetDeviceAsync, stateobj);
+            if (!Guide.IsVisible)
+            {
+                StorageDevice.BeginShowSelector(this.GetDeviceAsync, stateobj);
+            }
         }
 
         //StorageDevice device;
         void GetDeviceAsync(IAsyncResult result)
         {
-            Device = Guide.EndShowStorageDeviceSelector(result);
+            Device = StorageDevice.EndShowSelector(result);
         }
 
+        // I may have broken this function in converting to XNA 4.0, but this function isn't called anywhere so
+        // I can't test it.
         public void LoadNumberOfLevels()
         {
             // Find the path of the next level.
@@ -1610,7 +1618,7 @@ namespace CastleX
             //if the game is ran on an xbox, we go ahead and load the files
             //straight from the games itself, since there would be no use having a separate folder
             //containing the games.
-            DirectoryInfo dir = new DirectoryInfo(Path.Combine(StorageContainer.TitleLocation, "GameContent\\Levels\\"));
+            DirectoryInfo dir = new DirectoryInfo(Path.Combine(".\\GameContent\\Levels\\"));
             FileInfo[] dirfiles = dir.GetFiles();
             MaxLevels = dirfiles.Length;
             //Since the amount of files starts at 1, we subtract one from
@@ -1624,27 +1632,33 @@ namespace CastleX
         public void LoadSettings(StorageDevice device)
         {
             // Open a storage container.
-            //MyContainer.Dispose();
-            StorageContainer mycontainer = device.OpenContainer("Castle_X");
-            // Get the path of the save game.
-            string filename = Path.Combine(mycontainer.Path, "settings.xml");
+            IAsyncResult result = device.BeginOpenContainer("Castle_X", null, null);       // Wait for the WaitHandle to become signaled.
+            result.AsyncWaitHandle.WaitOne();
+            StorageContainer mycontainer = device.EndOpenContainer(result);
+            result.AsyncWaitHandle.Close(); 
 
-            if (File.Exists(filename))
+            // Get the path of the save game.
+            string filename = "settings.xml";
+
+            if (mycontainer.FileExists(filename))
             {
 #if DEBUG
                 if (System.Diagnostics.Debugger.IsAttached)
                 {
-                    using (TextReader tr = new StreamReader(filename))
+                    using (Stream file_stream = mycontainer.OpenFile(filename, FileMode.Open))
                     {
-                        string xml = tr.ReadToEnd();
-                        System.Diagnostics.Trace.WriteLine(xml);
+                        using (TextReader tr = new StreamReader(file_stream))
+                        {
+                            string xml = tr.ReadToEnd();
+                            System.Diagnostics.Trace.WriteLine(xml);
+                        }
                     }
                 }
 #endif
                 try
                 {
                     // Open the file
-                    FileStream stream = File.Open(filename, FileMode.Open);
+                    FileStream stream = (FileStream)mycontainer.OpenFile(filename, FileMode.Open);
 
                     // Convert the object to XML data and put it in the stream.
                     XmlSerializer serializer = new XmlSerializer(typeof(PESettings));
@@ -1678,26 +1692,32 @@ namespace CastleX
         {
             // Open a storage container.
 
-            IAsyncResult result = Guide.BeginShowStorageDeviceSelector(null, null);
-            while (!result.IsCompleted) { }
-            device = Guide.EndShowStorageDeviceSelector(result);
+            if (!Guide.IsVisible)
+            {
+                IAsyncResult result = StorageDevice.BeginShowSelector(null, null);
+                while (!result.IsCompleted) { }
+                device = StorageDevice.EndShowSelector(result);
 
-            StorageContainer mycontainer = device.OpenContainer("Castle_X");
-            // Get the path of the save game.
-            string filename = Path.Combine(mycontainer.Path, "settings.xml");
+                result = device.BeginOpenContainer("Castle_X", null, null);       // Wait for the WaitHandle to become signaled.
+                result.AsyncWaitHandle.WaitOne();
+                StorageContainer mycontainer = device.EndOpenContainer(result);
+                result.AsyncWaitHandle.Close(); 
 
-            // Open the file, creating it if necessary.
-            FileStream stream = File.Open(filename, FileMode.Create);
+                string filename = "settings.xml";
 
-            // Convert the object to XML data and put it in the stream.
-            XmlSerializer serializer = new XmlSerializer(typeof(PESettings));
-            serializer.Serialize(stream, Settings);
+                // Open the file, creating it if necessary.
+                FileStream stream = (FileStream)mycontainer.OpenFile(filename, FileMode.Create);
 
-            // Close the file.
-            stream.Close();
+                // Convert the object to XML data and put it in the stream.
+                XmlSerializer serializer = new XmlSerializer(typeof(PESettings));
+                serializer.Serialize(stream, Settings);
 
-            // Dispose the container, to commit changes.
-            mycontainer.Dispose();
+                // Close the file.
+                stream.Close();
+
+                // Dispose the container, to commit changes.
+                mycontainer.Dispose();
+            }
         }
 
 

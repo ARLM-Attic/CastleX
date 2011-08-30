@@ -197,7 +197,7 @@ namespace CastleX
         /// <param name="path">
         /// The absolute path to the level file to be loaded.
         /// </param>
-        public Level(IServiceProvider serviceProvider, string path, int levelNumber, int entranceNumber, ScreenManager myscreenmanager)
+        public Level(IServiceProvider serviceProvider, Stream level_stream, int levelNumber, int entranceNumber, ScreenManager myscreenmanager)
         {
             screenManager = myscreenmanager;
 
@@ -208,12 +208,12 @@ namespace CastleX
             levelnumber = levelNumber;
             try
             {
-                LoadTilesFromFile(path);
+                LoadTilesFromFile(level_stream);
             }
             catch
             {
                 screenManager.loadGameContent();
-                LoadTilesFromFile(path);
+                LoadTilesFromFile(level_stream);
             }
 
             Boolean playerPositionFound = false;
@@ -274,7 +274,7 @@ namespace CastleX
         /// <param name="path">
         /// The absolute path to the level file to be loaded.
         /// </param>
-        private void LoadTilesFromFile(string path)
+        private void LoadTilesFromFile(Stream level_stream)
         {
             // Load the level and ensure all of the lines are the same length.
             int width;
@@ -282,7 +282,7 @@ namespace CastleX
             List<string> lines = new List<string>();
             Boolean hasEntrance = false;
             Boolean hasExit = false;
-            using (StreamReader reader = new StreamReader(path))
+            using (StreamReader reader = new StreamReader(level_stream))
             {
                 string line = reader.ReadLine();
                 width = line.Length;
@@ -1722,7 +1722,7 @@ namespace CastleX
                 cameraTransform = Matrix.CreateTranslation(-cameraPosition.X, -cameraPosition.Y, 0.0f); 
 
             // If the player is under the upside down spell, modifies the screen accordingly
-            spriteBatch.Begin(SpriteBlendMode.AlphaBlend, SpriteSortMode.Immediate, SaveStateMode.None, cameraTransform);
+            spriteBatch.Begin(SpriteSortMode.Immediate, null, null, null, null, null, cameraTransform);
 
             DrawTiles(spriteBatch);
             foreach (Item item in items)
@@ -1758,7 +1758,7 @@ namespace CastleX
             screenManager.Player.Draw(gameTime, spriteBatch, Color.White);
             // If there is a player clone (created with magic mirror), draw it
             if (magicMirrorPlayerClone != null)
-                magicMirrorPlayerClone.Draw(gameTime, spriteBatch, new Color (Color.WhiteSmoke, 125));
+                magicMirrorPlayerClone.Draw(gameTime, spriteBatch, new Color (245,245,245, 125));
 
             spriteBatch.End();
 

@@ -310,9 +310,9 @@ namespace CastleX
             // Try to find the level to load. 
             if (ScreenManager.Settings.LoadLevelsFrom == 0)  // Load level from game folder
             {
-                levelPath = String.Format(levelsfolder + "/{0}.txt", levelNumber);
-                levelPath = Path.Combine(StorageContainer.TitleLocation, "GameContent/" + levelPath);
+                levelPath = String.Format("GameContent/" + levelsfolder + "/{0}.txt", levelNumber);
             }
+                /*
             else if (ScreenManager.Settings.LoadLevelsFrom == 1)  // Load level from saved levels folder
             {
                 StorageContainer mycontainer = ScreenManager.Device.OpenContainer("Castle_X");
@@ -370,6 +370,7 @@ namespace CastleX
                     Trace.Write("Level Path: " + levelPath + "\n");
                 }
             }
+                 */
 
             if (!File.Exists(levelPath))
                 LoadingScreen.Load(ScreenManager, true, new BackgroundScreen(), new MainMenuScreen(ScreenManager), new MessageBoxScreen("Level " + levelNumber.ToString() +  " not found!", false, false));
@@ -379,7 +380,8 @@ namespace CastleX
                 level.Dispose();
 
             // Load the level.
-            level = new Level(ScreenManager.Game.Services, levelPath, levelIndex, exitNumber, ScreenManager);
+            using (Stream level_stream = TitleContainer.OpenStream(levelPath))
+                level = new Level(ScreenManager.Game.Services, level_stream, levelIndex, exitNumber, ScreenManager);
             //myLevel = level;
         }
 

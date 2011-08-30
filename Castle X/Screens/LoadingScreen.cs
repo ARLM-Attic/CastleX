@@ -273,8 +273,7 @@ namespace CastleX
                                                       TimeSpan.TicksPerSecond /
                                                       Stopwatch.Frequency);
 
-            return new GameTime(loadStartTime.TotalRealTime + elapsedTime, elapsedTime,
-                                loadStartTime.TotalGameTime + elapsedTime, elapsedTime);
+            return new GameTime(loadStartTime.TotalGameTime + elapsedTime, elapsedTime);
         }
 
 

@@ -92,18 +92,17 @@ namespace CastleX
                 
 #if WINDOWS
                 
-            string levelPath;
-
+            //string levelPath;
 
             if (screenManager.Settings.LoadLevelsFrom == 0)
             {
                 levelPath = String.Format("Levels\\{0}.txt", ++levelIndex);
-                levelPath = Path.Combine(StorageContainer.TitleLocation, "GameContent\\" + levelPath);
+                levelPath = "GameContent\\" + levelPath;
                 //If the user has the game set to load levels from the interior game,
                 //the game will only count the levels from the interior games directory.
 
                 //Open Book Directory and Get all files from inside it
-                DirectoryInfo dir = new DirectoryInfo(Path.Combine(StorageContainer.TitleLocation, "GameContent\\Levels\\"));
+                DirectoryInfo dir = new DirectoryInfo(".\\GameContent\\Levels\\");
                 FileInfo[] dirfiles = dir.GetFiles();
                 maxLevels = dirfiles.Length;
                 //Since the amount of files starts at 1, we subtract one from
@@ -111,6 +110,7 @@ namespace CastleX
                 maxLevelsFromZero = dirfiles.Length - 1;
                 Trace.Write("Max Levels: " + maxLevels + "\n");
             }
+                /*
             else if (screenManager.Settings.LoadLevelsFrom == 1)
             {
                               //If the user has the game set to load levels from the game folder,
@@ -248,6 +248,7 @@ namespace CastleX
                     }
                 }
             }
+                 */
             
             
 #else
@@ -338,6 +339,7 @@ namespace CastleX
 
             #region Find the file for the selected level
 #if DEBUG
+            /*
             string levelsfolder = "Levels";
             // Try to find the level to load. 
             if (ScreenManager.Settings.LoadLevelsFrom == 0)  // Load level from game folder
@@ -402,6 +404,7 @@ namespace CastleX
                     Trace.Write("Level Path: " + levelPath + "\n");
                 }
             }
+             */
 #else
             levelPath = String.Format("Levels/{0}.txt", levelNumber);
             levelPath = Path.Combine(StorageContainer.TitleLocation, "GameContent/" + levelPath);
@@ -410,6 +413,8 @@ namespace CastleX
             #endregion
 
             #region Read the levels file for the metadata.
+
+            /*
             if (File.Exists(levelPath))
             {
                 int width;
@@ -482,6 +487,7 @@ namespace CastleX
                     }
                 }
             }
+             */
             #endregion
 
             

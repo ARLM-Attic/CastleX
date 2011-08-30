@@ -5,6 +5,7 @@ using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Audio;
+using Microsoft.Xna.Framework.GamerServices;
 using System.Diagnostics;
 
 namespace CastleX
@@ -58,6 +59,8 @@ namespace CastleX
 #endif*/
         public CastleXGame()
         {
+            Components.Add(new GamerServicesComponent(this));
+
             graphics = new Microsoft.Xna.Framework.GraphicsDeviceManager(this);
 
             Content.RootDirectory = "GameContent";

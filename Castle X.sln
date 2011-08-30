@@ -1,7 +1,9 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 10.00
-# Visual C# Express 2008
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual C# Express 2010
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Castle X", "Castle X\Castle X.csproj", "{069E298D-F4BF-4535-902A-FF6290B0B998}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Castle XGameContent", "Castle X\GameContent\Castle XGameContent.contentproj", "{C5B4BD5E-A87D-4311-A23D-4556189E482F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
