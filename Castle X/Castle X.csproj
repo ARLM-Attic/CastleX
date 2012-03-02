@@ -26,7 +26,7 @@
     <XnaUpgrade>
     </XnaUpgrade>
     <XnaOutputType>Game</XnaOutputType>
-    <XnaProfile>HiDef</XnaProfile>
+    <XnaProfile>Reach</XnaProfile>
     <TargetFrameworkProfile>Client</TargetFrameworkProfile>
     <FileUpgradeFlags>
     </FileUpgradeFlags>
@@ -78,56 +78,56 @@
     <XnaCompressContent>True</XnaCompressContent>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="GameClasses\Animation.cs" />
-    <Compile Include="GameClasses\AnimationPlayer.cs" />
-    <Compile Include="GameClasses\AnimatedItem.cs" />
-    <Compile Include="GameClasses\Entrance.cs" />
-    <Compile Include="GameClasses\MultipleStateItem.cs" />
-    <Compile Include="GameClasses\Spring.cs" />
-    <Compile Include="GameClasses\FallingTile.cs" />
-    <Compile Include="GameClasses\Circle.cs" />
-    <Compile Include="GameClasses\Boss.cs" />
-    <Compile Include="GameClasses\BossJumpTile.cs" />
-    <Compile Include="GameClasses\Arrow.cs" />
-    <Compile Include="GameClasses\Item.cs" />
-    <Compile Include="GameClasses\LevelEditorTile.cs" />
-    <Compile Include="GameClasses\LevelEditor.cs" />
-    <Compile Include="GameClasses\DeathTile.cs" />
-    <Compile Include="GameClasses\HiddenTile.cs" />
-    <Compile Include="GameClasses\Enemy.cs" />
+    <Compile Include="Model\GameClasses\Animation.cs" />
+    <Compile Include="Model\GameClasses\AnimationPlayer.cs" />
+    <Compile Include="Model\GameClasses\AnimatedItem.cs" />
+    <Compile Include="Model\GameClasses\Entrance.cs" />
+    <Compile Include="Model\GameClasses\MultipleStateItem.cs" />
+    <Compile Include="Model\GameClasses\Spring.cs" />
+    <Compile Include="Model\GameClasses\FallingTile.cs" />
+    <Compile Include="Model\GameClasses\Circle.cs" />
+    <Compile Include="Model\GameClasses\Boss.cs" />
+    <Compile Include="Model\GameClasses\BossJumpTile.cs" />
+    <Compile Include="Model\GameClasses\Arrow.cs" />
+    <Compile Include="Model\GameClasses\Item.cs" />
+    <Compile Include="Model\GameClasses\LevelEditorTile.cs" />
+    <Compile Include="Model\GameClasses\LevelEditor.cs" />
+    <Compile Include="Model\GameClasses\DeathTile.cs" />
+    <Compile Include="Model\GameClasses\HiddenTile.cs" />
+    <Compile Include="Model\GameClasses\Enemy.cs" />
     <Compile Include="Error.cs" />
-    <Compile Include="GameClasses\Exit.cs" />
-    <Compile Include="GameClasses\Layer.cs" />
-    <Compile Include="GameClasses\Level.cs" />
-    <Compile Include="GameClasses\MovingItem.cs" />
-    <Compile Include="Managers\GameScreen.cs" />
-    <Compile Include="GameClasses\Player.cs" />
-    <Compile Include="Managers\InputState.cs" />
+    <Compile Include="Model\GameClasses\Exit.cs" />
+    <Compile Include="Model\GameClasses\Layer.cs" />
+    <Compile Include="Model\GameClasses\Level.cs" />
+    <Compile Include="Model\GameClasses\MovingItem.cs" />
+    <Compile Include="Controller\Managers\GameScreen.cs" />
+    <Compile Include="Model\GameClasses\Player.cs" />
+    <Compile Include="Controller\Managers\InputState.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="CastleXGame.cs" />
-    <Compile Include="GameClasses\RectangleExtensions.cs" />
-    <Compile Include="Screens\BackgroundScreen.cs" />
-    <Compile Include="Screens\BackgroundDemoScreen.cs" />
-    <Compile Include="Screens\LevelEditorScreen.cs" />
-    <Compile Include="Screens\NumberScreen.cs" />
+    <Compile Include="Model\GameClasses\RectangleExtensions.cs" />
+    <Compile Include="View\Screens\BackgroundScreen.cs" />
+    <Compile Include="View\Screens\BackgroundDemoScreen.cs" />
+    <Compile Include="View\Screens\LevelEditorScreen.cs" />
+    <Compile Include="View\Screens\NumberScreen.cs" />
     <None Include="app.config" />
     <None Include="Properties\app.manifest" />
-    <None Include="Screens\LevelEditorScreeen_old.cs" />
-    <Compile Include="Screens\GameplayScreen.cs" />
-    <Compile Include="Screens\LevelSelectScreen.cs" />
-    <Compile Include="Screens\LoadingScreen.cs" />
-    <Compile Include="Screens\MainMenuScreen.cs" />
-    <Compile Include="Screens\MenuEntry.cs" />
-    <Compile Include="Screens\MenuScreen.cs" />
-    <Compile Include="Screens\MessageBoxScreen.cs" />
-    <Compile Include="Screens\OptionsMenuScreen.cs" />
-    <Compile Include="Screens\PauseMenuScreen.cs" />
+    <None Include="View\Screens\LevelEditorScreeen_old.cs" />
+    <Compile Include="View\Screens\GameplayScreen.cs" />
+    <Compile Include="View\Screens\LevelSelectScreen.cs" />
+    <Compile Include="View\Screens\LoadingScreen.cs" />
+    <Compile Include="View\Screens\MainMenuScreen.cs" />
+    <Compile Include="View\Screens\MenuEntry.cs" />
+    <Compile Include="View\Screens\MenuScreen.cs" />
+    <Compile Include="View\Screens\MessageBoxScreen.cs" />
+    <Compile Include="View\Screens\OptionsMenuScreen.cs" />
+    <Compile Include="View\Screens\PauseMenuScreen.cs" />
     <Compile Include="PESettings.cs" />
     <Compile Include="ScreenManager.cs" />
     <Compile Include="SkinSettings.cs" />
-    <Compile Include="GameClasses\Tile.cs" />
-    <Compile Include="GameClasses\VanishingTile.cs" />
+    <Compile Include="Model\GameClasses\Tile.cs" />
+    <Compile Include="Model\GameClasses\VanishingTile.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="castelo.png" />
