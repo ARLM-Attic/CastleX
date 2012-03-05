@@ -1,4 +1,5 @@
 using System;
+using CastleX.Model.GameClasses.Entity;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
@@ -12,7 +13,7 @@ namespace CastleX
     /// <summary>
     ///  A Boss who moves, jumps, etc.
     /// </summary>
-    public class Boss
+    public class Boss : Entity
     {
         // Animations
         private Animation idleAnimation;

@@ -1,4 +1,5 @@
 using System;
+using CastleX.Model.GameClasses.Entity;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
@@ -12,8 +13,11 @@ namespace CastleX
     /// <summary>
     /// Our fearless adventurer!
     /// </summary>
-    public class Player
+    public class Player : Entity
     {
+
+        #region Fields
+
         // Animations
         private Animation idleAnimation;
         private Animation runAnimation;
@@ -41,29 +45,13 @@ namespace CastleX
         private SoundEffect powerUpSound;
         private SoundEffect DiveSound;
 
-
-        public Level Level
-        {
-            get { return level; }
-        }
-        Level level;
-
-        bool demogoleft = false;
-
-        public int Lives
-        {
-            get { return lives; }
-            set { lives = value; }
-        }
-        int lives = 4;
-
         // Inventory
         public int YellowKeys = 0;
         public int GreenKeys = 0;
         public int RedKeys = 0;
         public int BlueKeys = 0;
         public bool hasMap = false;
-        public bool hasOxygen = false; 
+        public bool hasOxygen = false;
         public bool hasCandle = false;
         public bool IsAlive;
         public int Score = 0;
@@ -77,12 +65,44 @@ namespace CastleX
         private float UnderwaterTime;
         private Boolean isUnderWater = false;        // set to true when player is under water
         private Boolean wasUnderWater = false;        // set to true when player is under water
+
+        bool demogoleft = false;
+
+        private float previousBottom;
+        private float previousLeft;
+        private float previousRight;
+
+        int numJumps = 0;
+        int MaxDoubleJumps = 5;
+
+        GamePadState gamePadState;
+        KeyboardState keyboardState;
+        GamePadState previousGamePadState;
+        KeyboardState previousKeyboardState;
+
+        #endregion
+
+        #region Properties
+
+        Level level;
+        public Level Level
+        {
+            get { return level; }
+        }
+
+        int lives = 4;
+        public int Lives
+        {
+            get { return lives; }
+            set { lives = value; }
+        }
+
         public bool IsUnderwater
         {
             get { return isUnderWater; }
         }
 
-       public Vector2 StartPosition { get; set; }
+        public Vector2 StartPosition { get; set; }
 
         public bool IsPoweredUp
         {
@@ -90,7 +110,7 @@ namespace CastleX
             set
             {
                 if (!value)
-                   powerUpTime = 0;
+                    powerUpTime = 0;
             }
         }
 
@@ -105,38 +125,29 @@ namespace CastleX
             get { return isGhost; }
         }
 
+        // Physics state
+        Vector2 position;
+        public Vector2 Position
+        {
+            get { return position; }
+            set { position = value; }
+        }
+
+        Vector2 velocity;
+        public Vector2 Velocity
+        {
+            get { return velocity; }
+            set { velocity = value; }
+        }
+
+        #endregion
+
         private readonly Color[] poweredUpColors = {
                                Color.Red,
                                Color.Blue,
                                Color.Orange,
                                Color.Yellow,
                                                };
-        // Physics state
-        public Vector2 Position
-        {
-            get { return position; }
-            set { position = value; }
-        }
-        Vector2 position;
-
-        private float previousBottom;
-        private float previousLeft;
-        private float previousRight;
-
-        int numJumps = 0;
-        int MaxDoubleJumps = 5;
-
-        public Vector2 Velocity
-        {
-            get { return velocity; }
-            set { velocity = value; }
-        }
-        Vector2 velocity;
-
-        GamePadState gamePadState;
-        KeyboardState keyboardState;
-        GamePadState previousGamePadState;
-        KeyboardState previousKeyboardState;
 
         // Constants for controling horizontal movement
         private float MoveAcceleration
@@ -181,6 +192,7 @@ namespace CastleX
                     return 0.48f;
                 }
         }
+
         //private float airDragFactor = 0.48f;
         //private float ClimbAcceleration = 7000.0f;
         //private float MaxClimbSpeed = 1000.0f;
@@ -247,15 +259,14 @@ namespace CastleX
         /// <summary>
         /// Gets whether or not the player's feet are on the ground.
         /// </summary>
+        bool isOnGround;
         public bool IsOnGround
         {
             get { return isOnGround; }
         }
-        bool isOnGround;
 
         public bool isTouchingLadder = false;
         private bool wasTouchingLadder = false;
-
 
         public TimeSpan InvulnerableTime
         {
@@ -289,12 +300,12 @@ namespace CastleX
         /// </summary>
         private bool wasClimbing;
 
-    private Vector2 movement;
-    // Jumping state
-    public bool isJumping;
-    public bool isSpringJumping; // If the jump was triggered by a spring
-    public bool isClimbingUp;
-    public bool isClimbingDown;
+        private Vector2 movement;
+        // Jumping state
+        public bool isJumping;
+        public bool isSpringJumping; // If the jump was triggered by a spring
+        public bool isClimbingUp;
+        public bool isClimbingDown;
 
         public int CurrentHealth
         {
@@ -355,6 +366,7 @@ namespace CastleX
 
         }
 
+        #region LoadContent
         /// <summary>
         /// Loads the player sprite sheet and sounds.
         /// </summary>
@@ -390,6 +402,7 @@ namespace CastleX
             int top = idleAnimation.FrameHeight - height;
             localBounds = new Rectangle(left, top, width, height);         
         }
+        #endregion
 
         /// <summary>
         /// Resets the player to life.
@@ -405,8 +418,7 @@ namespace CastleX
                 level.Boss.Position = level.bossStartPosition;
             sprite.PlayAnimation(idleAnimation);
             this.level = level;
-         }
-
+        }
 
         #region Kill and Hurt methods
         /// <summary>
@@ -504,95 +516,6 @@ namespace CastleX
             }
         }
         #endregion
-
-        public void Update(GameTime gameTime)
-        {
-            GetInput();
-            DoAttack(gameTime);
-
-            // Checks if the player is underwater and checks if he is still alive
-            if (level.GetTileTypeAtPosition(this.Position) == TileType.Water)
-            {
-                isUnderWater = true;
-                if (!wasUnderWater)
-                {
-                    Submerge();
-                    wasUnderWater = true;
-                }
-            }
-            else
-            {
-                isUnderWater = false;
-                wasUnderWater = false;
-            }
-            if (isUnderWater && IsOutOfOxygen)
-                Kill();
-
-
-            if (currentHealth > MaxHealth)
-            {
-                lives += 1;
-                currentHealth = 1;
-            }
-
-            ApplyPhysics(gameTime);
-            if (IsPoweredUp)
-                powerUpTime = Math.Max(0.0f, powerUpTime - (float)gameTime.ElapsedGameTime.TotalSeconds);
-
-            if (isUnderWater)
-                UnderwaterTime = Math.Max(0.0f, UnderwaterTime - (float)gameTime.ElapsedGameTime.TotalSeconds);
-
-            if (IsAlive)
-            {
-                if (isOnGround)
-                {
-                    if (isAttacking)
-                    {
-                        sprite.PlayAnimation(attackAnimation);
-                        sprite_sword.PlayAnimation(attack_swordAnimation);
-                    }
-                    else
-                    {
-                        if (Math.Abs(Velocity.X) - 0.02f > 0)
-                        {
-                            sprite.PlayAnimation(runAnimation);
-                        }
-                        else
-                        {
-                            sprite.PlayAnimation(idleAnimation);
-                        }
-                    }
-                }
-                else if (isClimbing)
-                {
-                 //   if (Math.Abs(Velocity.Y) - 0.02f > 0)
-                 //   {
-                        sprite.PlayAnimation(climbingAnimation);
-                 //   }
-                 //   else
-                 //   {
-                      //  sprite.PlayAnimation(idleAnimation);
-                 //   }
-                }
-            }
-
-            // Clear input.
-            movement.X = 0.0f;
-            movement.Y = 0.0f;
-            isJumping = false;
-            isClimbingUp = false;
-            isClimbingDown = false;
-            wasClimbing = isClimbing;
-            wasJumping = isJumping;
-
-            if (isOnGround)
-                numJumps = 0;
-
-            if (invulnerableTime.Seconds > 0)
-                invulnerableTime -= gameTime.ElapsedGameTime;
-            else
-                invulnerableTime = TimeSpan.FromSeconds(0.0); 
-        }
 
         /// <summary>
         /// Gets player horizontal movement and jump commands from input.
@@ -830,6 +753,7 @@ namespace CastleX
             DoJump(JumpLaunchVelocity, gameTime);
 
         }
+        
         /// <summary>
         /// Calculates the Y velocity accounting for jumping and
         /// animates accordingly.
@@ -937,7 +861,6 @@ namespace CastleX
                 wasAttacking = false;
             }
         }
-
 
         /// <summary>
         /// Detects and resolves all collisions between the player and his neighboring
@@ -1150,7 +1073,7 @@ namespace CastleX
         /// </param>
         public void OnLose(Enemy killedBy, bool playKillSound)
         {
-       //     level.TimeRemaining = TimeSpan.Zero;
+        //    level.TimeRemaining = TimeSpan.Zero;
             IsAlive = false;
         }
 
@@ -1166,6 +1089,118 @@ namespace CastleX
             }
             //sprite.PlayAnimation(celebrateAnimation);  // Do NOT celebrate in the end of each level!
         }
+
+        public void PowerUp()
+        {
+            powerUpTime = MaxPowerUpTime;
+
+            powerUpSound.Play(screenManager.Settings.SoundVolumeAmount, 0, 0);
+        }
+
+        public void Submerge()
+        {
+            if (hasOxygen)
+                UnderwaterTime = MaxUnderwaterTime * 45;
+            else
+                UnderwaterTime = MaxUnderwaterTime;
+
+            DiveSound.Play(screenManager.Settings.SoundVolumeAmount, 0, 0);
+        }
+
+        #region Update
+
+        public void Update(GameTime gameTime)
+        {
+            GetInput();
+            DoAttack(gameTime);
+
+            // Checks if the player is underwater and checks if he is still alive
+            if (level.GetTileTypeAtPosition(this.Position) == TileType.Water)
+            {
+                isUnderWater = true;
+                if (!wasUnderWater)
+                {
+                    Submerge();
+                    wasUnderWater = true;
+                }
+            }
+            else
+            {
+                isUnderWater = false;
+                wasUnderWater = false;
+            }
+            if (isUnderWater && IsOutOfOxygen)
+                Kill();
+
+
+            if (currentHealth > MaxHealth)
+            {
+                lives += 1;
+                currentHealth = 1;
+            }
+
+            ApplyPhysics(gameTime);
+            if (IsPoweredUp)
+                powerUpTime = Math.Max(0.0f, powerUpTime - (float)gameTime.ElapsedGameTime.TotalSeconds);
+
+            if (isUnderWater)
+                UnderwaterTime = Math.Max(0.0f, UnderwaterTime - (float)gameTime.ElapsedGameTime.TotalSeconds);
+
+            if (IsAlive)
+            {
+                if (isOnGround)
+                {
+                    if (isAttacking)
+                    {
+                        sprite.PlayAnimation(attackAnimation);
+                        sprite_sword.PlayAnimation(attack_swordAnimation);
+                    }
+                    else
+                    {
+                        if (Math.Abs(Velocity.X) - 0.02f > 0)
+                        {
+                            sprite.PlayAnimation(runAnimation);
+                        }
+                        else
+                        {
+                            sprite.PlayAnimation(idleAnimation);
+                        }
+                    }
+                }
+                else if (isClimbing)
+                {
+                    //   if (Math.Abs(Velocity.Y) - 0.02f > 0)
+                    //   {
+                    sprite.PlayAnimation(climbingAnimation);
+                    //   }
+                    //   else
+                    //   {
+                    //  sprite.PlayAnimation(idleAnimation);
+                    //   }
+                }
+            }
+
+            // Clear input.
+            movement.X = 0.0f;
+            movement.Y = 0.0f;
+            isJumping = false;
+            isClimbingUp = false;
+            isClimbingDown = false;
+            wasClimbing = isClimbing;
+            wasJumping = isJumping;
+
+            if (isOnGround)
+                numJumps = 0;
+
+            if (invulnerableTime.Seconds > 0)
+                invulnerableTime -= gameTime.ElapsedGameTime;
+            else
+                invulnerableTime = TimeSpan.FromSeconds(0.0);
+        }
+
+        #endregion
+
+        #region Draw
 
         /// <summary>
         /// Draws the animated player.
@@ -1240,22 +1275,8 @@ namespace CastleX
 
 
         }
-        public void PowerUp()
-        {
-            powerUpTime = MaxPowerUpTime;
-
-            powerUpSound.Play(screenManager.Settings.SoundVolumeAmount, 0, 0);
-        }
-
-        public void Submerge()
-        {
-            if(hasOxygen)
-                UnderwaterTime = MaxUnderwaterTime * 45;
-            else
-                UnderwaterTime = MaxUnderwaterTime;
-
-            DiveSound.Play(screenManager.Settings.SoundVolumeAmount, 0, 0);
-        }
+        
+        #endregion
 
     }
 }

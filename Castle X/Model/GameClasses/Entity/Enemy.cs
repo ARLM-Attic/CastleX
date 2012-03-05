@@ -1,4 +1,5 @@
 ﻿using System;
+using CastleX.Model.GameClasses.Entity;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Audio;
@@ -32,7 +33,7 @@ namespace CastleX
     /// <summary>
     /// An evil monster hell-bent on impeding the progress of our fearless adventurer.
     /// </summary>
-    public class Enemy
+    public class Enemy : Entity
     {
         public EnemyType Type;
         public Level Level

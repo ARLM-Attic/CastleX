@@ -80,6 +80,7 @@
   <ItemGroup>
     <Compile Include="Controller\Animation.cs" />
     <Compile Include="Controller\AnimationPlayer.cs" />
+    <Compile Include="Model\GameClasses\Entity\Entity.cs" />
     <Compile Include="Model\GameClasses\Item\AnimatedItem.cs" />
     <Compile Include="Model\GameClasses\Entrance.cs" />
     <Compile Include="Model\GameClasses\Item\MultipleStateItem.cs" />
