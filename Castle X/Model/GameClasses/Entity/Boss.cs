@@ -1,12 +1,12 @@
+
+#region Using Statements
 using System;
+using System.IO;
 using CastleX.Model.GameClasses.Entity;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
-using System.Diagnostics;
-using Microsoft.Xna.Framework.Media;
-using System.IO;
+#endregion
 
 namespace CastleX
 {
@@ -15,47 +15,34 @@ namespace CastleX
     /// </summary>
     public class Boss : Entity
     {
+
+        #region Fields
+
         // Animations
-        private Animation idleAnimation;
-        private Animation runAnimation;
+        //private Animation idleAnimation;
+        //private Animation runAnimation;
         private Animation jumpAnimation;
         private Animation celebrateAnimation;
-        private Animation dieAnimation;
+        //private Animation dieAnimation;
         private SpriteEffects flip = SpriteEffects.None;
-        private AnimationPlayer sprite;
+        //private AnimationPlayer sprite;
 
         public Stream StatusString { get; set; }
 
         ScreenManager screenManager;
+
         // Sounds
         private SoundEffect killedSound;
         private SoundEffect jumpSound;
         private SoundEffect fallSound;
-        public Level Level
-        {
-            get { return level; }
-        }
-        Level level;
 
         bool demogoleft = false;
-        public int Lives
-        {
-            get { return lives; }
-            set { lives = value; }
-        }
-        int lives;
+
 
         public bool IsAlive;
         // Powerup state
         private const float MaxPowerUpTime = 6.0f;
         private float powerUpTime;
-        
-
-        public bool IsPoweredUp
-        {
-            get { return powerUpTime > 0.0f; }
-        }
-
 
         private readonly Color[] poweredUpColors = {
                                Color.Red,
@@ -65,15 +52,6 @@ namespace CastleX
                                                };
         private SoundEffect powerUpSound;
 
-
-        // Physics state
-        public Vector2 Position
-        {
-            get { return position; }
-            set { position = value; }
-        }
-        Vector2 position;
-
         private float previousBottom;
         private float previousLeft;
         private float previousRight;
@@ -82,14 +60,6 @@ namespace CastleX
 
         int numJumps = 0;
         int MaxDoubleJumps = 5;
-
-        public Vector2 Velocity
-        {
-            get { return velocity; }
-            set { velocity = value; }
-        }
-        Vector2 velocity;
-
 
         // Constants for controling horizontal movement
         private float MoveAcceleration = 7000.0f;
@@ -109,23 +79,7 @@ namespace CastleX
         // Input configuration
         private int LadderAlignment = 12;
 
-        /// <summary>
-        /// Gets whether or not the player's feet are on the ground.
-        /// </summary>
-        public bool IsOnGround
-        {
-            get { return isOnGround; }
-            set { isOnGround = false; }
-        }
-        bool isOnGround;
-
         public bool isTouchingLadder = false;
-
-
-        /// <summary>
-        /// Gets whether the player was jumping on the last update cycle.
-        /// </summary>
-        public bool wasJumping {get; set;}
 
         /// <summary>
         /// Flag set when the player has pressed the jump button. This doesn't
@@ -134,15 +88,6 @@ namespace CastleX
         //private bool jumpRequested;
 
         private float jumpTime;
-
-        /// <summary>
-        /// Gets whether or not the player is ascending or descending a ladder.
-        /// </summary>
-        private bool isClimbing;
-        public bool IsClimbing
-        {
-            get { return isClimbing; }
-        }
 
         /// <summary>
         /// Gets whether the player was climbing on the last update cycle.
@@ -165,13 +110,74 @@ namespace CastleX
             get { return movementy; }
             set { movementy = value; }
         }*/
-    private Vector2 movement;
+        private Vector2 movement;
         // Jumping state
         public bool isJumping;
         //private bool wasJumping;
         //private float jumpTime;
         public bool isClimbingUp;
         public bool isClimbingDown;
+
+        #endregion
+
+        #region Properties
+
+        public Level Level
+        {
+            get { return level; }
+        }
+        Level level;
+
+        public int Lives
+        {
+            get { return lives; }
+            set { lives = value; }
+        }
+        int lives;
+
+        public bool IsPoweredUp
+        {
+            get { return powerUpTime > 0.0f; }
+        }
+
+        // Physics state
+        public Vector2 Position
+        {
+            get { return position; }
+            set { position = value; }
+        }
+        Vector2 position;
+
+        public Vector2 Velocity
+        {
+            get { return velocity; }
+            set { velocity = value; }
+        }
+        Vector2 velocity;
+
+        /// <summary>
+        /// Gets whether or not the player's feet are on the ground.
+        /// </summary>
+        public bool IsOnGround
+        {
+            get { return isOnGround; }
+            set { isOnGround = false; }
+        }
+        bool isOnGround;
+
+        /// <summary>
+        /// Gets whether the player was jumping on the last update cycle.
+        /// </summary>
+        public bool wasJumping { get; set; }
+
+        /// <summary>
+        /// Gets whether or not the player is ascending or descending a ladder.
+        /// </summary>
+        private bool isClimbing;
+        public bool IsClimbing
+        {
+            get { return isClimbing; }
+        }
 
         private Rectangle localBounds;
         /// <summary>
@@ -188,6 +194,8 @@ namespace CastleX
             }
         }
 
+        #endregion
+
         /// <summary>
         /// Constructors a new player.
         /// </summary>
@@ -200,6 +208,7 @@ namespace CastleX
             Reset(position);
         }
 
+        #region LoadContent
         /// <summary>
         /// Loads the player sprite sheet and sounds.
         /// </summary>
@@ -225,6 +234,7 @@ namespace CastleX
             jumpSound = Level.screenManager.PlayerJumpSound;
             fallSound = Level.screenManager.PlayerFallSound;
         }
+        #endregion
 
         /// <summary>
         /// Resets the player to life.
@@ -236,56 +246,6 @@ namespace CastleX
             Velocity = Vector2.Zero;
             IsAlive = true;
             sprite.PlayAnimation(idleAnimation);
-        }
-
-
-        public void Update(GameTime gameTime)
-        {
-            GetInput();
-
-            ApplyPhysics(gameTime);
-            if (IsPoweredUp)
-                powerUpTime = Math.Max(0.0f, powerUpTime - (float)gameTime.ElapsedGameTime.TotalSeconds);
-    
-
-            if (IsAlive)
-            {
-                if (isOnGround)
-                {
-                    if (Math.Abs(Velocity.X) - 0.02f > 0)
-                    {
-                        sprite.PlayAnimation(runAnimation);
-                    }
-                    else
-                    {
-                        sprite.PlayAnimation(idleAnimation);
-                    }
-                }
-                else if (isClimbing)
-                {
-                    if (Math.Abs(Velocity.Y) - 0.02f > 0)
-                    {
-                        sprite.PlayAnimation(runAnimation);
-                    }
-                    else
-                    {
-                        sprite.PlayAnimation(idleAnimation);
-                    }
-                }
-            }
-
-            // Clear input.
-            movement.X = 0.0f;
-            movement.Y = 0.0f;
-            isJumping = false;
-            isClimbingUp = false;
-            isClimbingDown = false;
-            wasClimbing = isClimbing;
-            wasJumping = isJumping;
-
-            if (isOnGround)
-                numJumps = 0; 
-            
         }
 
         /// <summary>
@@ -320,7 +280,6 @@ namespace CastleX
                     }
                 }
         }
-
 
         private bool IsAlignedToLadder()
         {
@@ -596,7 +555,65 @@ namespace CastleX
         {
             sprite.PlayAnimation(celebrateAnimation);
         }
+        public void PowerUp()
+        {
+            powerUpTime = MaxPowerUpTime;
 
+            powerUpSound.Play(screenManager.Settings.SoundVolumeAmount, 0, 0);
+        }
+
+        #region Update
+        public void Update(GameTime gameTime)
+        {
+            GetInput();
+
+            ApplyPhysics(gameTime);
+            if (IsPoweredUp)
+                powerUpTime = Math.Max(0.0f, powerUpTime - (float)gameTime.ElapsedGameTime.TotalSeconds);
+
+
+            if (IsAlive)
+            {
+                if (isOnGround)
+                {
+                    if (Math.Abs(Velocity.X) - 0.02f > 0)
+                    {
+                        sprite.PlayAnimation(runAnimation);
+                    }
+                    else
+                    {
+                        sprite.PlayAnimation(idleAnimation);
+                    }
+                }
+                else if (isClimbing)
+                {
+                    if (Math.Abs(Velocity.Y) - 0.02f > 0)
+                    {
+                        sprite.PlayAnimation(runAnimation);
+                    }
+                    else
+                    {
+                        sprite.PlayAnimation(idleAnimation);
+                    }
+                }
+            }
+
+            // Clear input.
+            movement.X = 0.0f;
+            movement.Y = 0.0f;
+            isJumping = false;
+            isClimbingUp = false;
+            isClimbingDown = false;
+            wasClimbing = isClimbing;
+            wasJumping = isJumping;
+
+            if (isOnGround)
+                numJumps = 0;
+
+        }
+        #endregion
+
+        #region Draw
         /// <summary>
         /// Draws the animated player.
         /// </summary>
@@ -628,14 +645,7 @@ namespace CastleX
             else
                 sprite.Draw(gameTime, spriteBatch, Position, flip, new Color(255, 0, 0, 150));
         }
-        public void PowerUp()
-        {
-            powerUpTime = MaxPowerUpTime;
-
-            powerUpSound.Play(screenManager.Settings.SoundVolumeAmount, 0, 0);
-        }
-    
-
+        #endregion
 
     }
 }

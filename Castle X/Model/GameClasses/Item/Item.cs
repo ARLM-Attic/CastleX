@@ -1,8 +1,7 @@
 ﻿using System;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Audio;
-using System.Diagnostics;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace CastleX
 {
@@ -105,6 +104,7 @@ namespace CastleX
             Color = Color.White;  // most items don't use a tint color
             isBouncing = true;    // most items do bounce
 
+            #region ItemType
             switch (ItemType)
             {
                 case ItemType.Trunk:
@@ -146,31 +146,13 @@ namespace CastleX
                     texture = screenManager.MagicMirrorTexture;
                     break;
             }
+            #endregion
+
         }
 
         public void onTouched()
         {
             // ***TODO: Any action when object is touched by an arrow or something else (player COLLECTS the object)
-        }
-
-        /// <summary>
-        /// Bounces up and down in the air to entice players to collect them.
-        /// </summary>
-        public void Update(GameTime gameTime)
-        {
-            // Bounce control constants
-            const float BounceHeight = 0.18f;
-            const float BounceRate = 3.0f;
-            const float BounceSync = -0.75f;
-
-            // Bounce along a sine curve over time.
-            // Include the X coordinate so that neighboring items bounce in a nice wave pattern.            
-            double t = gameTime.TotalGameTime.TotalSeconds * BounceRate + Position.X * BounceSync;
-            if (isBouncing)
-                bounce = (float)Math.Sin(t) * BounceHeight * texture.Height;
-            else
-                bounce = 0 - texture.Height/4;
-
         }
 
         /// <summary>
@@ -273,6 +255,26 @@ namespace CastleX
                 collectedSound.Play(screenManager.Settings.SoundVolumeAmount, 0, 0);
             }
             catch { }
+        }
+
+        /// <summary>
+        /// Bounces up and down in the air to entice players to collect them.
+        /// </summary>
+        public void Update(GameTime gameTime)
+        {
+            // Bounce control constants
+            const float BounceHeight = 0.18f;
+            const float BounceRate = 3.0f;
+            const float BounceSync = -0.75f;
+
+            // Bounce along a sine curve over time.
+            // Include the X coordinate so that neighboring items bounce in a nice wave pattern.            
+            double t = gameTime.TotalGameTime.TotalSeconds * BounceRate + Position.X * BounceSync;
+            if (isBouncing)
+                bounce = (float)Math.Sin(t) * BounceHeight * texture.Height;
+            else
+                bounce = 0 - texture.Height / 4;
+
         }
 
         /// <summary>

@@ -9,6 +9,14 @@ namespace CastleX
     /// </summary>
     struct AnimationPlayer
     {
+
+        /// <summary>
+        /// The amount of time in seconds that the current frame has been shown for.
+        /// </summary>
+        private float time;
+
+        #region Properties
+
         /// <summary>
         /// Gets the animation which is currently playing.
         /// </summary>
@@ -29,17 +37,14 @@ namespace CastleX
         int frameIndex;
 
         /// <summary>
-        /// The amount of time in seconds that the current frame has been shown for.
-        /// </summary>
-        private float time;
-
-        /// <summary>
         /// Gets a texture origin at the bottom center of each frame.
         /// </summary>
         public Vector2 Origin
         {
             get { return new Vector2(Animation.FrameWidth / 2.0f, Animation.FrameHeight); }
         }
+
+        #endregion
 
         /// <summary>
         /// Begins or continues playback of an animation.
@@ -66,7 +71,19 @@ namespace CastleX
             this.time = 0.0f;
         }
 
+        /// <summary>
+        /// Draws an specific sprite frame(instead of animating)
+        /// </summary>
+        public void DrawSprite(GameTime gameTime, SpriteBatch spriteBatch, Vector2 position, SpriteEffects spriteEffects)
+        {
+            // Calculate the source rectangle of the current frame.
+            Rectangle source = new Rectangle(frameIndex * Animation.FrameWidth, 0, Animation.FrameWidth, Animation.FrameHeight);
 
+            // Draw the current frame.
+            spriteBatch.Draw(Animation.Texture, position, source, Color.White, 0.0f, Origin, 1.0f, spriteEffects, 0.0f);
+        }
+
+        #region Draw
         public void Draw(GameTime gameTime, SpriteBatch spriteBatch, Vector2 position, SpriteEffects spriteEffects, Color color)
         {
             if (Animation == null)
@@ -100,20 +117,7 @@ namespace CastleX
         {
             Draw(gameTime, spriteBatch, position, spriteEffects, Color.White);
         }
-
-
-        /// <summary>
-        /// Draws an specific sprite frame(instead of animating)
-        /// </summary>
-        public void DrawSprite(GameTime gameTime, SpriteBatch spriteBatch, Vector2 position, SpriteEffects spriteEffects)
-        {
-            // Calculate the source rectangle of the current frame.
-            Rectangle source = new Rectangle(frameIndex * Animation.FrameWidth, 0, Animation.FrameWidth, Animation.FrameHeight);
-
-            // Draw the current frame.
-            spriteBatch.Draw(Animation.Texture, position, source, Color.White, 0.0f, Origin, 1.0f, spriteEffects, 0.0f);
-        }
-
+        #endregion
 
     }
 }

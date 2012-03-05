@@ -1,12 +1,13 @@
+
+#region Using Statements
 using System;
+using System.Diagnostics;
 using CastleX.Model.GameClasses.Entity;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using System.Diagnostics;
-using Microsoft.Xna.Framework.Media;
-using System.IO;
+#endregion
 
 namespace CastleX
 {
@@ -19,16 +20,16 @@ namespace CastleX
         #region Fields
 
         // Animations
-        private Animation idleAnimation;
-        private Animation runAnimation;
+        //private Animation idleAnimation;
+        //private Animation runAnimation;
         private Animation climbingAnimation;
         private Animation jumpAnimation;
         private Animation celebrateAnimation;
-        private Animation dieAnimation;
+        //private Animation dieAnimation;
         private Animation attackAnimation;
         private Animation attack_swordAnimation;
         private SpriteEffects flip = SpriteEffects.None;
-        private AnimationPlayer sprite;
+        //private AnimationPlayer sprite;
         private AnimationPlayer sprite_sword;
 
         ScreenManager screenManager;

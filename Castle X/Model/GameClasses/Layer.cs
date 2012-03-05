@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 //using System.Data.Linq;
-using System.Text;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Content;
-using System.Diagnostics;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace CastleX
 {

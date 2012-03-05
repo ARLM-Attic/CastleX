@@ -1,86 +1,32 @@
-﻿using System;
+﻿
+#region Using Statements
+using System;
 using CastleX.Model.GameClasses.Entity;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Audio;
-using System.Diagnostics;
+using Microsoft.Xna.Framework.Graphics;
+#endregion
 
 namespace CastleX
 {
-    /// <summary>
-    /// Facing direction along the X axis.
-    /// </summary>
-    public enum FaceDirection
-    {
-        Left = -1,
-        Right = 1,
-    }
-
-    public enum VerticalDirection
-    {
-        Up = -1,
-        Down = 1,
-    }
-
-    public enum EnemyType
-    {
-        Ghost = 1,
-        Monster = 2,
-        Flying = 3
-    }
-
 
     /// <summary>
     /// An evil monster hell-bent on impeding the progress of our fearless adventurer.
     /// </summary>
     public class Enemy : Entity
     {
+
+        #region Fields
+
         public EnemyType Type;
-        public Level Level
-        {
-            get { return level; }
-        }
-        Level level;
-
         ScreenManager screenManager;
-
-        /// <summary>
-        /// Position in world space of the bottom center of this enemy.
-        /// </summary>
-        public Vector2 Position
-        {
-            get { return position; }
-        }
-        Vector2 position;
-
+        
         private Rectangle localBounds;
-        /// <summary>
-        /// Gets a rectangle which bounds this enemy in world space.
-        /// </summary>
-        public Rectangle BoundingRectangle
-        {
-            get
-            {
-                int left = (int)Math.Round(Position.X - sprite.Origin.X) + localBounds.X;
-                int top = (int)Math.Round(Position.Y - sprite.Origin.Y) + localBounds.Y;
-
-                return new Rectangle(left, top, localBounds.Width, localBounds.Height);
-            }
-        }
-
-        // Animations
-        private Animation runAnimation;
-        private Animation idleAnimation;
-        private AnimationPlayer sprite;
-        private Animation dieAnimation;
 
         // Sounds
         private SoundEffect monsterKilledSound;
         private SoundEffect ghostKilledSound;
         private SoundEffect flyingEnemyKilledSound;
-
-        public bool IsAlive { get; set; }
-
 
         /// <summary>
         /// The direction this enemy is facing and moving along the X axis.
@@ -104,6 +50,44 @@ namespace CastleX
         /// </summary>
         private float MoveSpeed = 64.0f;
 
+        // Used for include variations on enemy movement
+        Random rnd = new Random();
+
+        #endregion
+
+        #region Properties
+
+        public Level Level
+        {
+            get { return level; }
+        }
+        Level level;
+
+        /// <summary>
+        /// Position in world space of the bottom center of this enemy.
+        /// </summary>
+        public Vector2 Position
+        {
+            get { return position; }
+        }
+        Vector2 position;
+
+        /// <summary>
+        /// Gets a rectangle which bounds this enemy in world space.
+        /// </summary>
+        public Rectangle BoundingRectangle
+        {
+            get
+            {
+                int left = (int)Math.Round(Position.X - sprite.Origin.X) + localBounds.X;
+                int top = (int)Math.Round(Position.Y - sprite.Origin.Y) + localBounds.Y;
+
+                return new Rectangle(left, top, localBounds.Width, localBounds.Height);
+            }
+        }
+
+        public bool IsAlive { get; set; }
+
         public int ContactDamage
         {
             get { return contactDamage; }
@@ -111,15 +95,13 @@ namespace CastleX
         }
         int contactDamage;
 
-        // Used for include variations on enemy movement
-        Random rnd = new Random();
+        #endregion
 
         /// <summary>
         /// Constructs a new Enemy.
         /// </summary>
         public Enemy(ScreenManager thisScreenManager, Level level, Vector2 position, EnemyType type, int enemyNumber, int contactDamage)
         {
-
             this.level = level;
             this.Type = type;
             screenManager = thisScreenManager;
@@ -141,29 +123,7 @@ namespace CastleX
             LoadContent(type, enemyNumber);
         }
 
-        /// <summary>
-        /// Called when the enemy has been killed.
-        /// </summary>
-        public void OnKilled()
-        {
-            IsAlive = false;
-            switch (this.Type)
-            {
-                case EnemyType.Monster:
-                     monsterKilledSound.Play(screenManager.Settings.SoundVolumeAmount, 0, 0);
-                     break;
-                case EnemyType.Ghost:
-                     ghostKilledSound.Play(screenManager.Settings.SoundVolumeAmount, 0, 0);
-                     break;
-                case EnemyType.Flying:
-                     flyingEnemyKilledSound.Play(screenManager.Settings.SoundVolumeAmount, 0, 0);
-                     break;
-
-            }
-             
-        }
-
-        
+        #region LoadContent
         /// <summary>
         /// Loads a particular enemy sprite sheet and sounds.
         /// </summary>
@@ -189,7 +149,7 @@ namespace CastleX
             }
 
             sprite.PlayAnimation(idleAnimation);
-            
+
             // Load sounds.
             monsterKilledSound = Level.screenManager.MonsterKilledSound;
             ghostKilledSound = Level.screenManager.GhostKilledSound;
@@ -202,8 +162,30 @@ namespace CastleX
             int top = idleAnimation.FrameHeight - height;
             localBounds = new Rectangle(left, top, width, height);
         }
+        #endregion
 
+        /// <summary>
+        /// Called when the enemy has been killed.
+        /// </summary>
+        public void OnKilled()
+        {
+            IsAlive = false;
+            switch (this.Type)
+            {
+                case EnemyType.Monster:
+                     monsterKilledSound.Play(screenManager.Settings.SoundVolumeAmount, 0, 0);
+                     break;
+                case EnemyType.Ghost:
+                     ghostKilledSound.Play(screenManager.Settings.SoundVolumeAmount, 0, 0);
+                     break;
+                case EnemyType.Flying:
+                     flyingEnemyKilledSound.Play(screenManager.Settings.SoundVolumeAmount, 0, 0);
+                     break;
+            }
+             
+        }
 
+        #region Update
         /// <summary>
         /// Paces back and forth along a platform, waiting at either end.
         /// </summary>
@@ -290,9 +272,9 @@ namespace CastleX
 
             }
         }
+        #endregion
 
-
-    
+        #region Draw
         /// <summary>
         /// Draws the animated enemy.
         /// </summary>
@@ -312,5 +294,7 @@ namespace CastleX
             SpriteEffects flip = direction > 0 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
             sprite.Draw(gameTime, spriteBatch, Position, flip);
         }
+        #endregion
+
     }
 }

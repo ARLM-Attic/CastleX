@@ -1,14 +1,16 @@
-﻿using System;
+﻿
+#region Using Statements
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
+using CastleX.Model.GameClasses.Entity;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Audio;
-using Microsoft.Xna.Framework.Media;
-using System.IO;
-using System.Diagnostics;
-using System.Reflection;
 using Microsoft.Xna.Framework.Input;
+#endregion
 
 namespace CastleX
 {
