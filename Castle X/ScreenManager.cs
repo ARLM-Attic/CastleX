@@ -208,6 +208,7 @@ namespace CastleX
         private const int numMonsters = 3;
         private const int numGhosts = 1;
         private const int numFlying = 1;
+        private const int numSwimming = 2;
         public Texture2D[] MonsterDieTexture = new Texture2D[numMonsters];
         public Texture2D[] MonsterIdleTexture = new Texture2D[numMonsters];
         public Texture2D[] MonsterRunTexture = new Texture2D[numMonsters];
@@ -217,6 +218,9 @@ namespace CastleX
         public Texture2D[] FlyingDieTexture = new Texture2D[numFlying];
         public Texture2D[] FlyingIdleTexture = new Texture2D[numFlying];
         public Texture2D[] FlyingRunTexture = new Texture2D[numFlying];
+        public Texture2D[] SwimmingDieTexture = new Texture2D[numSwimming];
+        public Texture2D[] SwimmingIdleTexture = new Texture2D[numSwimming];
+        public Texture2D[] SwimmingRunTexture = new Texture2D[numSwimming];
         // Player Textures
         public Texture2D PlayerAttackTexture { get; set; }
         public Texture2D PlayerAttack_swordAnimation { get; set; }
@@ -729,6 +733,31 @@ namespace CastleX
                 }
             }
 
+            // Swimming enemies
+            for (int i = 0; i < numSwimming; i++)
+            {
+                try
+                {
+                    if (SkinSettings.hasSprites)
+                    {
+                        //SwimmingDieTexture[i] = GraphicContent.Load<Texture2D>("Skins/" + Settings.Skin + "/Sprites/Enemies/Swimming" + (i + 1).ToString() + "/Die");
+                        SwimmingIdleTexture[i] = GraphicContent.Load<Texture2D>("Skins/" + Settings.Skin + "/Sprites/Enemies/Swimming" + (i + 1).ToString() + "/Idle");
+                        //SwimmingRunTexture[i] = GraphicContent.Load<Texture2D>("Skins/" + Settings.Skin + "/Sprites/Enemies/Swimming" + (i + 1).ToString() + "/Run");
+                    }
+                    else
+                    {
+                        //SwimmingDieTexture[i] = GraphicContent.Load<Texture2D>("Skins/0/Sprites/Enemies/Swimming" + (i + 1).ToString() + "/Die");
+                        SwimmingIdleTexture[i] = GraphicContent.Load<Texture2D>("Skins/0/Sprites/Enemies/Swimming" + (i + 1).ToString() + "/Idle");
+                        //SwimmingRunTexture[i] = GraphicContent.Load<Texture2D>("Skins/0/Sprites/Enemies/Swimming" + (i + 1).ToString() + "/Run");
+                    }
+                }
+                catch
+                {
+                    //SwimmingDieTexture[i] = GraphicContent.Load<Texture2D>("Skins/0/Sprites/Enemies/Swimming" + (i + 1).ToString() + "/Die");
+                    SwimmingIdleTexture[i] = GraphicContent.Load<Texture2D>("Skins/0/Sprites/Enemies/Swimming" + (i + 1).ToString() + "/Idle");
+                    //SwimmingRunTexture[i] = GraphicContent.Load<Texture2D>("Skins/0/Sprites/Enemies/Swimming" + (i + 1).ToString() + "/Run");
+                }
+            }
 
             #endregion
 

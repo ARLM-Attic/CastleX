@@ -85,5 +85,9 @@ namespace CastleX
         public int[] FrameWidth_Flying_Run = new int[4];
         public int[] FrameWidth_Flying_Die = new int[4];
         public int[] FrameWidth_Flying_Idle = new int[4];
+
+        public int[] FrameWidth_Swimming_Run = new int[4];
+        public int[] FrameWidth_Swimming_Die = new int[4];
+        public int[] FrameWidth_Swimming_Idle = new int[4];
     }
 }

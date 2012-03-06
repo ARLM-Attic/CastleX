@@ -155,6 +155,8 @@ GameContent\Skins\0\Sprites\HUDOxygen.xnb
 GameContent\Skins\0\Sprites\HUDCandle.xnb
 GameContent\Skins\0\Sprites\Oxygen.xnb
 GameContent\Skins\0\Sprites\magicMirror.xnb
+GameContent\Skins\0\Sprites\Enemies\Swimming1\Idle.xnb
+GameContent\Skins\0\Sprites\Enemies\Swimming2\Idle.xnb
 GameContent\Skins\0\Sounds\ExitReached.xnb
 GameContent\Skins\0\Sounds\CoinCollected.xnb
 GameContent\Skins\0\Sounds\MonsterKilled.xnb

@@ -19,17 +19,11 @@ namespace CastleX
         #region Fields
 
         // Animations
-        //private Animation idleAnimation;
-        //private Animation runAnimation;
         private Animation jumpAnimation;
         private Animation celebrateAnimation;
-        //private Animation dieAnimation;
         private SpriteEffects flip = SpriteEffects.None;
-        //private AnimationPlayer sprite;
 
         public Stream StatusString { get; set; }
-
-        ScreenManager screenManager;
 
         // Sounds
         private SoundEffect killedSound;
@@ -38,8 +32,6 @@ namespace CastleX
 
         bool demogoleft = false;
 
-
-        public bool IsAlive;
         // Powerup state
         private const float MaxPowerUpTime = 6.0f;
         private float powerUpTime;

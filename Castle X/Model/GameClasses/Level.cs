@@ -45,7 +45,13 @@ namespace CastleX
         public List<Entrance> entrances = new List<Entrance>();
 
         public List<FallingTile> FallingTiles = new List<FallingTile>();
-        public List<Enemy> enemies = new List<Enemy>();
+
+        //public List<Enemy> enemies = new List<Enemy>();
+        public List<MonsterEnemy> monsterEnemies = new List<MonsterEnemy>();
+        public List<FlyingEnemy> flyingEnemies = new List<FlyingEnemy>();
+        public List<GhostEnemy> ghostEnemies = new List<GhostEnemy>();
+        public List<SwimmingEnemy> swimmingEnemies = new List<SwimmingEnemy>();
+
         public List<Boss> bosses = new List<Boss>();
         public List<Arrow> arrows = new List<Arrow>();
         public List<VanishingTile> VanishingTiles = new List<VanishingTile>();
@@ -856,13 +862,16 @@ namespace CastleX
            switch (enemyType) // Each enemy has its own code...
             {
                 case 'G':
-                    enemies.Add(new Enemy(screenManager, this, position, EnemyType.Ghost, enemyNumber, contactDamage));
+                    ghostEnemies.Add(new GhostEnemy(screenManager, this, position, EnemyType.Ghost, enemyNumber, contactDamage));
                     break;
                 case 'M':
-                    enemies.Add(new Enemy(screenManager, this, position, EnemyType.Monster, enemyNumber, contactDamage));
+                    monsterEnemies.Add(new MonsterEnemy(screenManager, this, position, EnemyType.Monster, enemyNumber, contactDamage));
                     break;
                 case 'F':
-                    enemies.Add(new Enemy(screenManager, this, position, EnemyType.Flying, enemyNumber, contactDamage));
+                    flyingEnemies.Add(new FlyingEnemy(screenManager, this, position, EnemyType.Flying, enemyNumber, contactDamage));
+                    break;
+                case 'S':
+                    swimmingEnemies.Add(new SwimmingEnemy(screenManager, this, position, EnemyType.Swimming, enemyNumber, contactDamage));
                     break;
                 default:
                     throw new Exception(String.Format("Invalid enemy type {0}.", enemyType));
@@ -1480,13 +1489,48 @@ namespace CastleX
                 {
                     OnFallingTileFalling(FallingTile);
                 }
-                for (int e = 0; e < enemies.Count; ++e)
+
+                // check enemies
+                for (int e = 0; e < flyingEnemies.Count; ++e)
                 {
-                    if (FallingTile.BoundingCircle.Intersects(enemies[e].BoundingRectangle))
+                    if (FallingTile.BoundingCircle.Intersects(flyingEnemies[e].BoundingRectangle))
                     {
-                        enemies[e].OnKilled();
+                        flyingEnemies[e].OnKilled();
                     }
-                    else if (FallingTile.TriggerRectangle.Intersects(enemies[e].BoundingRectangle))
+                    else if (FallingTile.TriggerRectangle.Intersects(flyingEnemies[e].BoundingRectangle))
+                    {
+                        OnFallingTileFalling(FallingTile);
+                    }
+                }
+                for (int e = 0; e < ghostEnemies.Count; ++e)
+                {
+                    if (FallingTile.BoundingCircle.Intersects(ghostEnemies[e].BoundingRectangle))
+                    {
+                        ghostEnemies[e].OnKilled();
+                    }
+                    else if (FallingTile.TriggerRectangle.Intersects(ghostEnemies[e].BoundingRectangle))
+                    {
+                        OnFallingTileFalling(FallingTile);
+                    }
+                }
+                for (int e = 0; e < monsterEnemies.Count; ++e)
+                {
+                    if (FallingTile.BoundingCircle.Intersects(monsterEnemies[e].BoundingRectangle))
+                    {
+                        monsterEnemies[e].OnKilled();
+                    }
+                    else if (FallingTile.TriggerRectangle.Intersects(monsterEnemies[e].BoundingRectangle))
+                    {
+                        OnFallingTileFalling(FallingTile);
+                    }
+                }
+                for (int e = 0; e < swimmingEnemies.Count; ++e)
+                {
+                    if (FallingTile.BoundingCircle.Intersects(swimmingEnemies[e].BoundingRectangle))
+                    {
+                        swimmingEnemies[e].OnKilled();
+                    }
+                    else if (FallingTile.TriggerRectangle.Intersects(swimmingEnemies[e].BoundingRectangle))
                     {
                         OnFallingTileFalling(FallingTile);
                     }
@@ -1494,7 +1538,12 @@ namespace CastleX
             }
         }
 
-        Enemy enemytodie;
+
+        FlyingEnemy flyingEnemytodie;
+        GhostEnemy ghostEnemytodie;
+        MonsterEnemy monsterEnemytodie;
+        SwimmingEnemy swimmingEnemytodie;
+
         float enemydeathtime;
         /// <summary>
         /// Animates each enemy and allow them to kill the player.
@@ -1503,16 +1552,18 @@ namespace CastleX
         {
             try
             {
-                foreach (Enemy enemy in enemies)
+
+                #region FlyingEnemy
+                foreach (FlyingEnemy enemy in flyingEnemies)
                 {
 
                     if (!enemy.IsAlive)
                     {
-                        if (enemytodie == null)
-                            enemytodie = enemy;
+                        if (flyingEnemytodie == null)
+                            flyingEnemytodie = enemy;
                         else
-                            if (enemytodie != enemy)
-                                enemies.Remove(enemy);
+                            if (flyingEnemytodie != enemy)
+                                flyingEnemies.Remove(enemy);
                     }
                     else
                         enemy.Update(gameTime);
@@ -1542,20 +1593,189 @@ namespace CastleX
                         if (arrow.BoundingRectangle.Intersects(enemy.BoundingRectangle))
                             onEnemyHitByArrow(enemy, i);
                     }
+
+                    if (flyingEnemytodie != null)
+                    {
+                        enemydeathtime++;
+                        if (enemydeathtime > 20.0f)
+                        {
+                            flyingEnemies.Remove(flyingEnemytodie);
+                            enemydeathtime = 0;
+                            flyingEnemytodie = null;
+                        }
+                    }
+
                 }
+                #endregion
+
+                #region GhostEnemy
+                foreach (GhostEnemy enemy in ghostEnemies)
+                {
+
+                    if (!enemy.IsAlive)
+                    {
+                        if (ghostEnemytodie == null)
+                            ghostEnemytodie = enemy;
+                        else
+                            if (ghostEnemytodie != enemy)
+                                ghostEnemies.Remove(enemy);
+                    }
+                    else
+                        enemy.Update(gameTime);
+                    // Touching an enemy hurts the player. The Health is lower down according to the enemy's strenght defined on the level file
+                    if (enemy.IsAlive && (enemy.BoundingRectangle.Intersects(screenManager.Player.BoundingRectangle)
+                        || enemy.BoundingRectangle.Intersects(magicMirrorPlayerClone.BoundingRectangle)))
+                    {
+                        if (screenManager.Player.IsPoweredUp)
+                        {
+                            OnEnemyKilled(enemy);
+                        }
+                        else
+                        {
+                            OnPlayerHurt(enemy, true);
+                        }
+                    }
+                    if (enemy.IsAlive && (enemy.BoundingRectangle.Intersects(screenManager.Player.MeleeRectangle)
+                        || enemy.BoundingRectangle.Intersects(magicMirrorPlayerClone.MeleeRectangle)))
+                    {
+                        if (screenManager.Player.isAttacking)
+                            OnEnemyKilled(enemy);
+                    }
+
+                    for (int i = 0; i < arrows.Count; ++i)
+                    {
+                        Arrow arrow = arrows[i];
+                        if (arrow.BoundingRectangle.Intersects(enemy.BoundingRectangle))
+                            onEnemyHitByArrow(enemy, i);
+                    }
+
+                    if (ghostEnemytodie != null)
+                    {
+                        enemydeathtime++;
+                        if (enemydeathtime > 20.0f)
+                        {
+                            ghostEnemies.Remove(ghostEnemytodie);
+                            enemydeathtime = 0;
+                            ghostEnemytodie = null;
+                        }
+                    }
+
+                }
+                #endregion
+
+                #region MonsterEnemy
+                foreach (MonsterEnemy enemy in monsterEnemies)
+                {
+
+                    if (!enemy.IsAlive)
+                    {
+                        if (monsterEnemytodie == null)
+                            monsterEnemytodie = enemy;
+                        else
+                            if (monsterEnemytodie != enemy)
+                                monsterEnemies.Remove(enemy);
+                    }
+                    else
+                        enemy.Update(gameTime);
+                    // Touching an enemy hurts the player. The Health is lower down according to the enemy's strenght defined on the level file
+                    if (enemy.IsAlive && (enemy.BoundingRectangle.Intersects(screenManager.Player.BoundingRectangle)
+                        || enemy.BoundingRectangle.Intersects(magicMirrorPlayerClone.BoundingRectangle)))
+                    {
+                        if (screenManager.Player.IsPoweredUp)
+                        {
+                            OnEnemyKilled(enemy);
+                        }
+                        else
+                        {
+                            OnPlayerHurt(enemy, true);
+                        }
+                    }
+                    if (enemy.IsAlive && (enemy.BoundingRectangle.Intersects(screenManager.Player.MeleeRectangle)
+                        || enemy.BoundingRectangle.Intersects(magicMirrorPlayerClone.MeleeRectangle)))
+                    {
+                        if (screenManager.Player.isAttacking)
+                            OnEnemyKilled(enemy);
+                    }
+
+                    for (int i = 0; i < arrows.Count; ++i)
+                    {
+                        Arrow arrow = arrows[i];
+                        if (arrow.BoundingRectangle.Intersects(enemy.BoundingRectangle))
+                            onEnemyHitByArrow(enemy, i);
+                    }
+
+                    if (monsterEnemytodie != null)
+                    {
+                        enemydeathtime++;
+                        if (enemydeathtime > 20.0f)
+                        {
+                            monsterEnemies.Remove(monsterEnemytodie);
+                            enemydeathtime = 0;
+                            monsterEnemytodie = null;
+                        }
+                    }
+
+                }
+                #endregion
+
+                #region SwimmingEnemy
+                foreach (SwimmingEnemy enemy in swimmingEnemies)
+                {
+
+                    if (!enemy.IsAlive)
+                    {
+                        if (swimmingEnemytodie == null)
+                            swimmingEnemytodie = enemy;
+                        else
+                            if (swimmingEnemytodie != enemy)
+                                swimmingEnemies.Remove(enemy);
+                    }
+                    else
+                        enemy.Update(gameTime);
+                    // Touching an enemy hurts the player. The Health is lower down according to the enemy's strenght defined on the level file
+                    if (enemy.IsAlive && (enemy.BoundingRectangle.Intersects(screenManager.Player.BoundingRectangle)
+                        || enemy.BoundingRectangle.Intersects(magicMirrorPlayerClone.BoundingRectangle)))
+                    {
+                        if (screenManager.Player.IsPoweredUp)
+                        {
+                            OnEnemyKilled(enemy);
+                        }
+                        else
+                        {
+                            OnPlayerHurt(enemy, true);
+                        }
+                    }
+                    if (enemy.IsAlive && (enemy.BoundingRectangle.Intersects(screenManager.Player.MeleeRectangle)
+                        || enemy.BoundingRectangle.Intersects(magicMirrorPlayerClone.MeleeRectangle)))
+                    {
+                        if (screenManager.Player.isAttacking)
+                            OnEnemyKilled(enemy);
+                    }
+
+                    for (int i = 0; i < arrows.Count; ++i)
+                    {
+                        Arrow arrow = arrows[i];
+                        if (arrow.BoundingRectangle.Intersects(enemy.BoundingRectangle))
+                            onEnemyHitByArrow(enemy, i);
+                    }
+
+                    if (swimmingEnemytodie != null)
+                    {
+                        enemydeathtime++;
+                        if (enemydeathtime > 20.0f)
+                        {
+                           swimmingEnemies.Remove(swimmingEnemytodie);
+                            enemydeathtime = 0;
+                            swimmingEnemytodie = null;
+                        }
+                    }
+
+                }
+                #endregion
+
             }
             catch { }
 
-            if (enemytodie != null)
-            {
-                enemydeathtime++;
-                if (enemydeathtime > 20.0f)
-                {
-                    enemies.Remove(enemytodie);
-                    enemydeathtime = 0;
-                    enemytodie = null;
-                }
-            }
         }
         
 
@@ -1753,8 +1973,17 @@ namespace CastleX
                deathTile.Draw(gameTime, spriteBatch, !screenManager.isRunningSlow);
             foreach (MovingItem movingItem in MovingItems)
                 movingItem.Draw(gameTime, spriteBatch);
-            foreach (Enemy enemy in enemies)
+
+            // Draw enemies
+            foreach (FlyingEnemy enemy in flyingEnemies)
                 enemy.Draw(gameTime, spriteBatch);
+            foreach (GhostEnemy enemy in ghostEnemies)
+                enemy.Draw(gameTime, spriteBatch);
+            foreach (MonsterEnemy enemy in monsterEnemies)
+                enemy.Draw(gameTime, spriteBatch);
+            foreach (SwimmingEnemy enemy in swimmingEnemies)
+                enemy.Draw(gameTime, spriteBatch);
+
 
             // Draw the Player on top of everything
             screenManager.Player.Draw(gameTime, spriteBatch, Color.White);

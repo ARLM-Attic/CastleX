@@ -20,19 +20,14 @@ namespace CastleX
         #region Fields
 
         // Animations
-        //private Animation idleAnimation;
-        //private Animation runAnimation;
         private Animation climbingAnimation;
         private Animation jumpAnimation;
         private Animation celebrateAnimation;
-        //private Animation dieAnimation;
         private Animation attackAnimation;
         private Animation attack_swordAnimation;
         private SpriteEffects flip = SpriteEffects.None;
-        //private AnimationPlayer sprite;
-        private AnimationPlayer sprite_sword;
 
-        ScreenManager screenManager;
+        private AnimationPlayer sprite_sword;
 
         // Sounds
         private SoundEffect killedSound;
@@ -51,10 +46,11 @@ namespace CastleX
         public int GreenKeys = 0;
         public int RedKeys = 0;
         public int BlueKeys = 0;
+
         public bool hasMap = false;
         public bool hasOxygen = false;
         public bool hasCandle = false;
-        public bool IsAlive;
+
         public int Score = 0;
 
         // Powerup state
@@ -64,9 +60,10 @@ namespace CastleX
         // dive / underwater control
         private const float MaxUnderwaterTime = 1.0f;
         private float UnderwaterTime;
-        private Boolean isUnderWater = false;        // set to true when player is under water
-        private Boolean wasUnderWater = false;        // set to true when player is under water
 
+        private Boolean wasUnderWater = false;        // set to true when player is under water
+        //private Boolean isUnderWater = false;         // set to true when player is under water
+        
         bool demogoleft = false;
 
         private float previousBottom;
@@ -81,26 +78,70 @@ namespace CastleX
         GamePadState previousGamePadState;
         KeyboardState previousKeyboardState;
 
+        bool isfacingleft = false;
+
+        // Input configuration
+        private float MoveStickScale = 0.0f;
+        private Buttons JumpButton = Buttons.B;
+        private int LadderAlignment = 12;
+
+        // Attacking state
+        public bool isAttacking;
+        public bool wasAttacking;
+        const float MaxAttackTime = 0.33f;
+        public float AttackTime;
+
+        public bool isTouchingLadder = false;
+        private bool wasTouchingLadder = false;
+
+        /// <summary>
+        /// Gets whether the player was jumping on the last update cycle.
+        /// </summary>
+        private bool wasJumping;
+        private float jumpTime;
+
+        /// <summary>
+        /// Gets whether the player was climbing on the last update cycle.
+        /// </summary>
+        private bool wasClimbing;
+
+        private Vector2 movement;
+
+        // Jumping state
+        public bool isJumping;
+        public bool isSpringJumping; // If the jump was triggered by a spring
+        public bool isClimbingUp;
+        public bool isClimbingDown;
+
+        private readonly Color[] poweredUpColors = {
+                               Color.Red,
+                               Color.Blue,
+                               Color.Orange,
+                               Color.Yellow,
+                                               };
+
         #endregion
 
         #region Properties
 
-        Level level;
+        private Level _level;
         public Level Level
         {
-            get { return level; }
+            get { return _level; }
         }
 
-        int lives = 4;
+        private int _lives = 4;
         public int Lives
         {
-            get { return lives; }
-            set { lives = value; }
+            get { return _lives; }
+            set { _lives = value; }
         }
 
+        private bool _isUnderWater = false;
         public bool IsUnderwater
         {
-            get { return isUnderWater; }
+            get { return _isUnderWater; }
+            set { _isUnderWater = value; }
         }
 
         public Vector2 StartPosition { get; set; }
@@ -120,201 +161,63 @@ namespace CastleX
             get { return UnderwaterTime <= 0.0f; }
         }
 
-        Boolean isGhost = false;
+        private Boolean _isGhost = false;
         public bool IsGhost
         {
-            get { return isGhost; }
+            get { return _isGhost; }
         }
 
         // Physics state
-        Vector2 position;
+        private Vector2 _position;
         public Vector2 Position
         {
-            get { return position; }
-            set { position = value; }
+            get { return _position; }
+            set { _position = value; }
         }
 
-        Vector2 velocity;
+        private Vector2 _velocity;
         public Vector2 Velocity
         {
-            get { return velocity; }
-            set { velocity = value; }
+            get { return _velocity; }
+            set { _velocity = value; }
         }
-
-        #endregion
-
-        private readonly Color[] poweredUpColors = {
-                               Color.Red,
-                               Color.Blue,
-                               Color.Orange,
-                               Color.Yellow,
-                                               };
-
-        // Constants for controling horizontal movement
-        private float MoveAcceleration
-        {
-            get
-            {
-                if (isUnderWater)
-                    return 5000.0f;
-                else
-                    return 7000.0f;
-            }
-        }
-
-        private float MaxMoveSpeed
-        {
-            get
-            {
-                if (isUnderWater)
-                    return 700.0f;
-                else
-                    return 1000.0f;
-            }
-        }
-
-        private float GroundDragFactor
-        {
-            get
-            {
-                if (isUnderWater)
-                    return 0.28f;
-                else
-                    return 0.38f;
-            }
-        }
-
-        private float AirDragFactor
-        {
-            get { 
-                if(isUnderWater)
-                    return 0.42f;
-                else
-                    return 0.48f;
-                }
-        }
-
-        //private float airDragFactor = 0.48f;
-        //private float ClimbAcceleration = 7000.0f;
-        //private float MaxClimbSpeed = 1000.0f;
-
-        // Constants for controlling vertical movement
-        private float MaxJumpTime
-        {
-            get
-            {
-                if (isUnderWater)
-                    return 0.25f;
-                else
-                    return 0.35f;
-            }
-        }
-        private float JumpLaunchVelocity
-        {
-            get
-            {
-                if (isUnderWater)
-                    return -1500.0f;
-                else
-                    return -2000.0f;
-            }
-        }
-
-        private float GravityAcceleration
-        {
-            get
-            {
-                if (isUnderWater)
-                    return 1000.0f;
-                else
-                    return 1700.0f;
-            }
-        }
-
-        private float MaxFallSpeed
-        {
-            get
-            {
-                if (isUnderWater)
-                    return 200.0f;
-                else
-                    return 450.0f;
-            }
-        }
-
-        private float JumpControlPower = 0.13f;
-
-        bool isfacingleft = false;
-
-        // Input configuration
-        private float MoveStickScale = 0.0f;
-        private Buttons JumpButton = Buttons.B;
-        private int LadderAlignment = 12;
-        
-        // Attacking state
-        public bool isAttacking;
-        public bool wasAttacking;
-        const float MaxAttackTime = 0.33f;
-        public float AttackTime;
 
         /// <summary>
         /// Gets whether or not the player's feet are on the ground.
         /// </summary>
-        bool isOnGround;
+        private bool _isOnGround;
         public bool IsOnGround
         {
-            get { return isOnGround; }
+            get { return _isOnGround; }
         }
 
-        public bool isTouchingLadder = false;
-        private bool wasTouchingLadder = false;
-
+        private TimeSpan _invulnerableTime = TimeSpan.Zero;
         public TimeSpan InvulnerableTime
         {
-            get { return invulnerableTime; }
-            set { invulnerableTime = value; }
+            get { return _invulnerableTime; }
+            set { _invulnerableTime = value; }
         }
-        TimeSpan invulnerableTime = TimeSpan.Zero;
 
         public bool Invulnerable
         {
-            get { return invulnerableTime != TimeSpan.Zero; }
+            get { return _invulnerableTime != TimeSpan.Zero; }
         }
-
-        /// <summary>
-        /// Gets whether the player was jumping on the last update cycle.
-        /// </summary>
-        private bool wasJumping;
-        private float jumpTime;
 
         /// <summary>
         /// Gets whether or not the player is ascending or descending a ladder.
         /// </summary>
-        private bool isClimbing;
+        private bool _isClimbing;
         public bool IsClimbing
         {
-            get { return isClimbing; }
+            get { return _isClimbing; }
         }
 
-        /// <summary>
-        /// Gets whether the player was climbing on the last update cycle.
-        /// </summary>
-        private bool wasClimbing;
-
-        private Vector2 movement;
-        // Jumping state
-        public bool isJumping;
-        public bool isSpringJumping; // If the jump was triggered by a spring
-        public bool isClimbingUp;
-        public bool isClimbingDown;
-
+        private int _currentHealth;
         public int CurrentHealth
         {
-            get { return currentHealth; }
-            set { currentHealth = value; }
+            get { return _currentHealth; }
+            set { _currentHealth = value; }
         }
-        int currentHealth;
-        private const int MaxHealth = 5;
 
         private Rectangle localBounds;
         /// <summary>
@@ -352,19 +255,120 @@ namespace CastleX
             }
         }
 
+        #endregion
+
+        #region Constants
+
+        // Constants for controlling horizontal movement
+        private float MoveAcceleration
+        {
+            get
+            {
+                if (_isUnderWater)
+                    return 5000.0f;
+                else
+                    return 7000.0f;
+            }
+        }
+
+        private float MaxMoveSpeed
+        {
+            get
+            {
+                if (_isUnderWater)
+                    return 700.0f;
+                else
+                    return 1000.0f;
+            }
+        }
+
+        private float GroundDragFactor
+        {
+            get
+            {
+                if (_isUnderWater)
+                    return 0.28f;
+                else
+                    return 0.38f;
+            }
+        }
+
+        private float AirDragFactor
+        {
+            get { 
+                if(_isUnderWater)
+                    return 0.42f;
+                else
+                    return 0.48f;
+                }
+        }
+
+        //private float airDragFactor = 0.48f;
+        //private float ClimbAcceleration = 7000.0f;
+        //private float MaxClimbSpeed = 1000.0f;
+
+        // Constants for controlling vertical movement
+        private float MaxJumpTime
+        {
+            get
+            {
+                if (_isUnderWater)
+                    return 0.25f;
+                else
+                    return 0.35f;
+            }
+        }
+        private float JumpLaunchVelocity
+        {
+            get
+            {
+                if (_isUnderWater)
+                    return -1500.0f;
+                else
+                    return -2000.0f;
+            }
+        }
+
+        private float GravityAcceleration
+        {
+            get
+            {
+                if (_isUnderWater)
+                    return 1000.0f;
+                else
+                    return 1700.0f;
+            }
+        }
+
+        private float MaxFallSpeed
+        {
+            get
+            {
+                if (_isUnderWater)
+                    return 200.0f;
+                else
+                    return 450.0f;
+            }
+        }
+
+        private float JumpControlPower = 0.13f;
+
+        private const int MaxHealth = 5;
+
+        #endregion
+
         /// <summary>
         /// Constructor for a new player.
         /// </summary>
         public Player(ScreenManager ThisScreenManager, Level level, Vector2 position, Boolean isGhost)
         {
             screenManager = ThisScreenManager;
-            this.level = level;
-            this.isGhost = isGhost;
+            _level = level;
+            _isGhost = isGhost;
 
             LoadContent();
 
             Reset(position, level);
-
         }
 
         #region LoadContent
@@ -415,10 +419,12 @@ namespace CastleX
             Velocity = Vector2.Zero;
             IsAlive = true;
             CurrentHealth = MaxHealth;
+            _level = level;
+
             if (level.Boss != null)
                 level.Boss.Position = level.bossStartPosition;
+
             sprite.PlayAnimation(idleAnimation);
-            this.level = level;
         }
 
         #region Kill and Hurt methods
@@ -518,6 +524,8 @@ namespace CastleX
         }
         #endregion
 
+        #region GetInput
+
         /// <summary>
         /// Gets player horizontal movement and jump commands from input.
         /// </summary>
@@ -543,9 +551,9 @@ namespace CastleX
                     keyboardState.IsKeyDown(Keys.Left) ||
                     keyboardState.IsKeyDown(Keys.A))
                 {
-                    if (isClimbing)
+                    if (_isClimbing)
                     {
-                        isClimbing = false;
+                        _isClimbing = false;
                         wasClimbing = true;
                     }
                     movement.X = -1.0f;
@@ -554,9 +562,9 @@ namespace CastleX
                          keyboardState.IsKeyDown(Keys.Right) ||
                          keyboardState.IsKeyDown(Keys.D))
                 {
-                    if (isClimbing)
+                    if (_isClimbing)
                     {
-                        isClimbing = false;
+                        _isClimbing = false;
                         wasClimbing = true;
                     }
                     movement.X = 1.0f;
@@ -567,16 +575,16 @@ namespace CastleX
                     keyboardState.IsKeyDown(Keys.Up) ||
                     keyboardState.IsKeyDown(Keys.W))
                 {
-                    isClimbing = false;
+                    _isClimbing = false;
                     if (IsAlignedToLadder())
                     {
                         // We need to check the tile behind the player, not what he is
                         // standing on
-                        if (level.GetTileCollisionBehindPlayer(screenManager.Player.Position) == TileCollision.Ladder)
+                        if (_level.GetTileCollisionBehindPlayer(screenManager.Player.Position) == TileCollision.Ladder)
                         {
-                            isClimbing = true;
+                            _isClimbing = true;
                             isJumping = false;
-                            isOnGround = false;
+                            _isOnGround = false;
                             movement.Y = -1.0f;
                         }
                     }
@@ -585,16 +593,16 @@ namespace CastleX
                    keyboardState.IsKeyDown(Keys.Down) ||
                    keyboardState.IsKeyDown(Keys.S))
                 {
-                    isClimbing = false;
+                    _isClimbing = false;
 
                     if (IsAlignedToLadder())
                     {
                         // Check the tile the player is standing on
-                        if (level.GetTileCollisionAtPosition(screenManager.Player.Position) == TileCollision.Ladder)
+                        if (_level.GetTileCollisionAtPosition(screenManager.Player.Position) == TileCollision.Ladder)
                         {
-                            isClimbing = true;
+                            _isClimbing = true;
                             isJumping = false;
-                            isOnGround = false;
+                            _isOnGround = false;
                             movement.Y = 1.0f;
                         }
                     }
@@ -621,8 +629,8 @@ namespace CastleX
 
                 if ((gamePadState.IsButtonDown(Buttons.LeftTrigger) || keyboardState.IsKeyDown(Keys.C)) && (previousGamePadState.IsButtonUp(Buttons.LeftTrigger) && (previousKeyboardState.IsKeyUp(Keys.C))))
                 {
-                    level.addArrow(new Vector2(this.position.X, this.position.Y - screenManager.PlayerIdleTexture.Height / 2), isfacingleft);
-                    if (isUnderWater)
+                    _level.addArrow(new Vector2(this._position.X, this._position.Y - screenManager.PlayerIdleTexture.Height / 2), isfacingleft);
+                    if (_isUnderWater)
                         arrowUnderwaterSound.Play(screenManager.Settings.SoundVolumeAmount, 0, 0);
                     else
                         arrowSound.Play(screenManager.Settings.SoundVolumeAmount, 0, 0);
@@ -639,9 +647,9 @@ namespace CastleX
                 else
                     movement.X = -1.0f;
 
-                for (int i = 0; i < level.BossJumpTiles.Count; ++i)
+                for (int i = 0; i < _level.BossJumpTiles.Count; ++i)
                 {
-                    BossJumpTile bossJumpTile = level.BossJumpTiles[i];
+                    BossJumpTile bossJumpTile = _level.BossJumpTiles[i];
                     if (BoundingRectangle.Intersects(bossJumpTile.BoundingRectangle))
                     {
                         isJumping = true;
@@ -651,13 +659,14 @@ namespace CastleX
                 previousGamePadState = GamePad.GetState(PlayerIndex.One);
                 previousKeyboardState = Keyboard.GetState(PlayerIndex.One);
             }
-            if (isClimbing)
+            if (_isClimbing)
                 wasTouchingLadder = isTouchingLadder;
 
-            if (level.isUpsideDown)
+            if (_level.isUpsideDown)
                 movement.X *= -1;
         }
 
+        #endregion
 
         private bool IsAlignedToLadder()
         {
@@ -673,18 +682,18 @@ namespace CastleX
             }
             else
             {
-                float PrevPosition = position.X;
-                int playerOffset = ((int)position.X % Tile.Width) - Tile.Center;
+                float PrevPosition = _position.X;
+                int playerOffset = ((int)_position.X % Tile.Width) - Tile.Center;
 
                 if (Math.Abs(playerOffset) <= LadderAlignment)
                 {
                     // Align the player with the middle of the tile
-                    position.X -= playerOffset;
+                    _position.X -= playerOffset;
                     return true;
                 }
                 else
                 {
-                    position.X = PrevPosition;
+                    _position.X = PrevPosition;
                     return false;
                 }
             }
@@ -700,40 +709,40 @@ namespace CastleX
 
             // Base velocity is a combination of horizontal movement control and
             // acceleration downward due to gravity.
-            if (!isClimbing)
+            if (!_isClimbing)
             {
-                velocity.X += movement.X * MoveAcceleration * elapsed;
+                _velocity.X += movement.X * MoveAcceleration * elapsed;
 
                 if (wasClimbing)
                 {
                     // If we've just finished climbing, stop at the top of the ladder.
-                    velocity.Y = 0;
+                    _velocity.Y = 0;
                 }
                 else
                 {
                     // Apply gravity as normal
-                    velocity.Y = MathHelper.Clamp(velocity.Y + GravityAcceleration * elapsed, -MaxFallSpeed, MaxFallSpeed);
+                    _velocity.Y = MathHelper.Clamp(_velocity.Y + GravityAcceleration * elapsed, -MaxFallSpeed, MaxFallSpeed);
                 }
             }
             else
             {
                 // When player is climbing ladder
-                velocity.Y = movement.Y * MoveAcceleration * elapsed;
+                _velocity.Y = movement.Y * MoveAcceleration * elapsed;
             }
 
-            velocity.Y = DoJump(velocity.Y, gameTime);
+            _velocity.Y = DoJump(_velocity.Y, gameTime);
 
             // Apply pseudo-drag horizontally.
-            if (isOnGround)
-                velocity.X *= GroundDragFactor;
+            if (_isOnGround)
+                _velocity.X *= GroundDragFactor;
             else
-                velocity.X *= AirDragFactor;
+                _velocity.X *= AirDragFactor;
 
             // Prevent the player from running faster than his top speed.            
-            velocity.X = MathHelper.Clamp(velocity.X, -MaxMoveSpeed, MaxMoveSpeed);
+            _velocity.X = MathHelper.Clamp(_velocity.X, -MaxMoveSpeed, MaxMoveSpeed);
 
             // Apply velocity.
-            Position += velocity * elapsed;
+            Position += _velocity * elapsed;
             Position = new Vector2((float)Math.Round(Position.X), (float)Math.Round(Position.Y));
 
             // If the player is now colliding with the level, separate them.
@@ -741,10 +750,10 @@ namespace CastleX
 
             // If the collision stopped us from moving, reset the velocity to zero.
             if (Position.X == previousPosition.X)
-                velocity.X = 0;
+                _velocity.X = 0;
 
             if (Position.Y == previousPosition.Y)
-                velocity.Y = 0;
+                _velocity.Y = 0;
         }
 
         public void DoSpringJump(GameTime gameTime)
@@ -775,7 +784,7 @@ namespace CastleX
         public float DoJump(float velocityY, GameTime gameTime)
         {     
             // If the player wants to jump
-            if (isJumping && !isClimbing) 
+            if (isJumping && !_isClimbing) 
               //  if (isJumping) /// && !isClimbing) Allows jumping while climbing
                 {
                
@@ -843,10 +852,11 @@ namespace CastleX
                     sprite_sword.PlayAnimation(attack_swordAnimation);
                     if (!wasAttacking)
                     {
-                        if (isUnderWater)
+                        if (_isUnderWater)
                             swordUnderwaterSound.Play(screenManager.Settings.SoundVolumeAmount, 0, 0);
                         else
                             swordSound.Play(screenManager.Settings.SoundVolumeAmount, 0, 0);
+
                         wasAttacking = true;
                     }
                 }
@@ -882,10 +892,10 @@ namespace CastleX
             //    bottomTile = (int)Math.Ceiling(((float)(bounds.Bottom) / Tile.Height) -0.125) - 1; // XXX DEBUG Bacalhau - apagar
 
             // Reset flag to search for ground collision.
-            isOnGround = false;
+            _isOnGround = false;
 
             //For each potentially colliding arrow.   
-            foreach (Arrow arrow in level.arrows)
+            foreach (Arrow arrow in _level.arrows)
                 bounds = HandleCollision(bounds, TileCollision.Platform, arrow.BoundingRectangle);
 
             // Only the real player uses moving platforms and springs
@@ -893,7 +903,7 @@ namespace CastleX
             if (!IsGhost)
             {
                 //For each potentially colliding moving item 
-                foreach (MovingItem movingItem in level.MovingItems)
+                foreach (MovingItem movingItem in _level.MovingItems)
                 {
                     // Reset flag to search for moving item  collision.   
                     movingItem.PlayerIsOn = false;
@@ -909,7 +919,7 @@ namespace CastleX
                 }
 
                 //For each potentially colliding spring.   
-                foreach (Spring spring in level.Springs)
+                foreach (Spring spring in _level.Springs)
                 {
                     // Reset flag to search for spring collision.   
                     spring.PlayerIsOn = false;
@@ -951,13 +961,13 @@ namespace CastleX
                                 {
                                     if (collision == TileCollision.Ladder)
                                     {
-                                        if (!isClimbing && !isJumping)
+                                        if (!_isClimbing && !isJumping)
                                         {
                                             // When walking over a ladder
-                                            isOnGround = true;
+                                            _isOnGround = true;
                                         }
                                         if (screenManager.IsDemo)
-                                            isClimbing = true;
+                                            _isClimbing = true;
                                     }
                                     else
                                     {
@@ -974,14 +984,14 @@ namespace CastleX
                           //              if (tileBounds.Left == previousLeft) 
                                         if (tileBounds.Left == previousLeft)
                                             demogoleft = false;
-                                        isOnGround = true;
-                                        isClimbing = false;
+                                        _isOnGround = true;
+                                        _isClimbing = false;
                                         isJumping = false;
                                     }
                                 }
 
                                 // Ignore platforms, unless we are on the ground.
-                                if (collision == TileCollision.Impassable || isOnGround)
+                                if (collision == TileCollision.Impassable || _isOnGround)
                                 {
                                     // Resolve the collision along the Y axis.
                                     Position = new Vector2(Position.X, Position.Y + depth.Y);
@@ -1001,7 +1011,7 @@ namespace CastleX
                                 // Perform further collisions with the new bounds.
                                 bounds = BoundingRectangle;
                             }
-                            else if (collision == TileCollision.Ladder && !isClimbing)
+                            else if (collision == TileCollision.Ladder && !_isClimbing)
                             {
                                 // When walking in front of a ladder, falling off a ladder
                                 // but not climbing
@@ -1022,7 +1032,6 @@ namespace CastleX
             previousLeft = bounds.Left;
             previousRight = bounds.Right;
         }
-
         private Rectangle HandleCollision(Rectangle bounds, TileCollision collision, Rectangle tileBounds)
         {
             Vector2 depth = RectangleExtensions.GetIntersectionDepth(bounds, tileBounds);
@@ -1036,7 +1045,7 @@ namespace CastleX
                 {
                     // If we crossed the top of a tile, we are on the ground.   
                     if (previousBottom <= tileBounds.Top)
-                        isOnGround = true;
+                        _isOnGround = true;
 
                     // Ignore platforms, unless we are on the ground.   
                     if (collision == TileCollision.Impassable || IsOnGround)
@@ -1116,9 +1125,9 @@ namespace CastleX
             DoAttack(gameTime);
 
             // Checks if the player is underwater and checks if he is still alive
-            if (level.GetTileTypeAtPosition(this.Position) == TileType.Water)
+            if (_level.GetTileTypeAtPosition(this.Position) == TileType.Water)
             {
-                isUnderWater = true;
+                _isUnderWater = true;
                 if (!wasUnderWater)
                 {
                     Submerge();
@@ -1127,29 +1136,31 @@ namespace CastleX
             }
             else
             {
-                isUnderWater = false;
+                _isUnderWater = false;
                 wasUnderWater = false;
             }
-            if (isUnderWater && IsOutOfOxygen)
+
+            if (_isUnderWater && IsOutOfOxygen)
                 Kill();
 
-
-            if (currentHealth > MaxHealth)
+            if (_currentHealth > MaxHealth)
             {
-                lives += 1;
-                currentHealth = 1;
+                _lives += 1;
+                _currentHealth = 1;
             }
 
             ApplyPhysics(gameTime);
+
             if (IsPoweredUp)
                 powerUpTime = Math.Max(0.0f, powerUpTime - (float)gameTime.ElapsedGameTime.TotalSeconds);
 
-            if (isUnderWater)
+            if (_isUnderWater)
                 UnderwaterTime = Math.Max(0.0f, UnderwaterTime - (float)gameTime.ElapsedGameTime.TotalSeconds);
 
+            // play relevant animation
             if (IsAlive)
             {
-                if (isOnGround)
+                if (_isOnGround)
                 {
                     if (isAttacking)
                     {
@@ -1168,7 +1179,7 @@ namespace CastleX
                         }
                     }
                 }
-                else if (isClimbing)
+                else if (_isClimbing)
                 {
                     //   if (Math.Abs(Velocity.Y) - 0.02f > 0)
                     //   {
@@ -1187,16 +1198,16 @@ namespace CastleX
             isJumping = false;
             isClimbingUp = false;
             isClimbingDown = false;
-            wasClimbing = isClimbing;
+            wasClimbing = _isClimbing;
             wasJumping = isJumping;
 
-            if (isOnGround)
+            if (_isOnGround)
                 numJumps = 0;
 
-            if (invulnerableTime.Seconds > 0)
-                invulnerableTime -= gameTime.ElapsedGameTime;
+            if (_invulnerableTime.Seconds > 0)
+                _invulnerableTime -= gameTime.ElapsedGameTime;
             else
-                invulnerableTime = TimeSpan.FromSeconds(0.0);
+                _invulnerableTime = TimeSpan.FromSeconds(0.0);
         }
 
         #endregion
@@ -1230,7 +1241,7 @@ namespace CastleX
             {
                 if (Invulnerable)
                     color = Color.Gray;
-                else if (isUnderWater)
+                else if (_isUnderWater)
                 {
                     color = Color.Aqua;
                 }
@@ -1243,11 +1254,12 @@ namespace CastleX
                 else
                     sprite_sword.Draw(gameTime, spriteBatch, new Vector2(Position.X - Tile.Width, Position.Y), flip, color);
             }            
+
             // Draw that sprite.
             sprite.Draw(gameTime, spriteBatch, Position, flip, color);
 
             // if the player is underwater, draw remaining oxygen bar
-            if (isUnderWater)
+            if (_isUnderWater)
             {
                 int remainingOxygen = 0;
                 if(hasOxygen)
@@ -1258,6 +1270,7 @@ namespace CastleX
                 Rectangle oxygenBar = new Rectangle((int)BoundingRectangle.X, (int)BoundingRectangle.Y - Tile.Height, remainingOxygen, 4);
                 spriteBatch.Draw(screenManager.BlankTexture, oxygenBar, Color.Cyan);
             }
+
             // Draw the sword if attacking
             if (screenManager.Settings.DebugMode) //  Show bounding box if debugging
             {

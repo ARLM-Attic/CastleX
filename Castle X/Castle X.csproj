@@ -80,7 +80,11 @@
   <ItemGroup>
     <Compile Include="Controller\Animation.cs" />
     <Compile Include="Controller\AnimationPlayer.cs" />
+    <Compile Include="Model\GameClasses\Entity\Enemy\FlyingEnemy.cs" />
     <Compile Include="Model\GameClasses\Entity\Entity.cs" />
+    <Compile Include="Model\GameClasses\Entity\Enemy\SwimmingEnemy.cs" />
+    <Compile Include="Model\GameClasses\Entity\Enemy\GhostEnemy.cs" />
+    <Compile Include="Model\GameClasses\Entity\Enemy\MonsterEnemy.cs" />
     <Compile Include="Model\GameClasses\Item\AnimatedItem.cs" />
     <Compile Include="Model\GameClasses\Entrance.cs" />
     <Compile Include="Model\GameClasses\Item\MultipleStateItem.cs" />
@@ -95,7 +99,7 @@
     <Compile Include="Model\GameClasses\LevelEditor.cs" />
     <Compile Include="Model\GameClasses\Tile\DeathTile.cs" />
     <Compile Include="Model\GameClasses\Tile\HiddenTile.cs" />
-    <Compile Include="Model\GameClasses\Entity\Enemy.cs" />
+    <Compile Include="Model\GameClasses\Entity\Enemy\Enemy.cs" />
     <Compile Include="Error.cs" />
     <Compile Include="Model\GameClasses\Exit.cs" />
     <Compile Include="Model\GameClasses\Layer.cs" />

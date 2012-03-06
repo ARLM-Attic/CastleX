@@ -19,7 +19,6 @@ namespace CastleX
         #region Fields
 
         public EnemyType Type;
-        ScreenManager screenManager;
         
         private Rectangle localBounds;
 
@@ -86,8 +85,6 @@ namespace CastleX
             }
         }
 
-        public bool IsAlive { get; set; }
-
         public int ContactDamage
         {
             get { return contactDamage; }
@@ -98,20 +95,29 @@ namespace CastleX
         #endregion
 
         /// <summary>
+        /// Default empty constructor for a new Enemy.
+        /// </summary>
+        public Enemy() {}
+
+        /// <summary>
         /// Constructs a new Enemy.
         /// </summary>
         public Enemy(ScreenManager thisScreenManager, Level level, Vector2 position, EnemyType type, int enemyNumber, int contactDamage)
         {
             this.level = level;
-            this.Type = type;
+            Type = type;
             screenManager = thisScreenManager;
             this.position = position;
             this.contactDamage = contactDamage;
             IsAlive = true;
             MoveSpeed = 64.0f;
+
+            LoadContent(type, enemyNumber);
+
             // pick starting direction by chance
             if (rnd.NextDouble() < 0.7)
                 direction = (FaceDirection)(-(int)direction);
+
             // Only used by flying enemies
             if (type == EnemyType.Flying)
             {
@@ -120,14 +126,13 @@ namespace CastleX
                 if (rnd.NextDouble() < 0.6)
                     verticalDirection = (VerticalDirection)(-(int)verticalDirection);
             }
-            LoadContent(type, enemyNumber);
         }
 
         #region LoadContent
         /// <summary>
         /// Loads a particular enemy sprite sheet and sounds.
         /// </summary>
-        public void LoadContent(EnemyType type, int enemyNumber)
+        public virtual void LoadContent(EnemyType type, int enemyNumber)
         {
             switch (type)
             {
@@ -167,7 +172,7 @@ namespace CastleX
         /// <summary>
         /// Called when the enemy has been killed.
         /// </summary>
-        public void OnKilled()
+        public virtual void OnKilled()
         {
             IsAlive = false;
             switch (this.Type)
@@ -181,6 +186,9 @@ namespace CastleX
                 case EnemyType.Flying:
                      flyingEnemyKilledSound.Play(screenManager.Settings.SoundVolumeAmount, 0, 0);
                      break;
+                case EnemyType.Swimming:
+                     //swimmingEnemyKilledSound.Play(screenManager.Settings.SoundVolumeAmount, 0, 0);
+                     break;
             }
              
         }
@@ -189,7 +197,7 @@ namespace CastleX
         /// <summary>
         /// Paces back and forth along a platform, waiting at either end.
         /// </summary>
-        public void Update(GameTime gameTime)
+        public virtual void Update(GameTime gameTime)
         {
             float elapsed = (float)gameTime.ElapsedGameTime.TotalSeconds;
             if (!IsAlive)
@@ -271,28 +279,15 @@ namespace CastleX
                 }
 
             }
+
+
         }
         #endregion
 
         #region Draw
-        /// <summary>
-        /// Draws the animated enemy.
-        /// </summary>
-        public void Draw(GameTime gameTime, SpriteBatch spriteBatch)
+        public virtual void Draw(GameTime gameTime, SpriteBatch spriteBatch)
         {
-            if (!IsAlive)
-                sprite.PlayAnimation(dieAnimation);
-            else
-            if (!screenManager.Player.IsAlive ||
-                      Level.ReachedExit ||
-                      waitTime > 0)
-                sprite.PlayAnimation(idleAnimation);
-            else
-                sprite.PlayAnimation(runAnimation);
-
-            // Draw facing the way the enemy is moving.
-            SpriteEffects flip = direction > 0 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
-            sprite.Draw(gameTime, spriteBatch, Position, flip);
+            throw new Exception("Enemy Draw must be overridden");
         }
         #endregion
 
